@@ -87,33 +87,39 @@ def depthFirstSearch(problem: SearchProblem):
     explored = [problem.getStartState()]
     stack = util.Stack()
     parent = {}
-
     start = problem.getStartState()
+    
     stack.push(start)
     while stack:
         currentSimState = stack.pop()
 
+        # break if you find the goal
         if problem.isGoalState(currentSimState):
             path = [currentSimState]
             break
 
+        # gets the fringe
         fringe = problem.getSuccessors(currentSimState)
+
+        # loops through the fringe
         for neighborState in fringe:
+
+            # if a state in the fringe is not explored explore it & save corresponding info
             if neighborState[0] not in explored:
                 parent[neighborState[0]] = [currentSimState, neighborState[1]]
                 explored.append(neighborState[0])
                 stack.push(neighborState[0])
 
+    # once you have found the goal get the path from finish to start
     while path[-1] != start:
         answer.append(parent[path[-1]][1])
         path.append(parent[path[-1]][0])
 
-        print(f"\n answer: {answer} path: {path}")
-
+    # reverse list to be start to finish
     answer = list(reversed(answer))
 
     return answer
-    
+
 
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
