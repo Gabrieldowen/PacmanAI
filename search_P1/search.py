@@ -91,7 +91,11 @@ def depthFirstSearch(problem: SearchProblem):
     currentSimState = []
     explored = [problem.getStartState()]
     stack = util.Stack()
-    stack.push(problem.getStartState())
+    parent = {}
+
+    
+    
+    """
     print(f"\nexplored: {explored}")
 
     print("\nStart:", problem.getStartState())
@@ -99,33 +103,88 @@ def depthFirstSearch(problem: SearchProblem):
     print("\nStart's successors:", problem.getSuccessors(problem.getStartState()))
 
 
-    fringe = problem.getSuccessors(problem.getStartState())
+    
     print("\nfringe: ", fringe)
 
     currentSimState = fringe[0][0]
-    print("\nIs the currentSimState a goal?", problem.isGoalState(problem.getStartState()))
+    print("\nIs the currentSimState a goal?", problem.isGoalState(currentSimState)
     print("\nSimulate South:", problem.getSuccessors(fringe[0][0]))
+    """
+    start = problem.getStartState()
+    stack.push(start)
+    while stack:
+        currentSimState = stack.pop()
+
+        print(f"\n Goal{currentSimState}? {problem.isGoalState(currentSimState)}\n")
+        if problem.isGoalState(currentSimState):
+            print(f"\n Goal Found \n")
+            path = [currentSimState]
+            break
 
 
+        print(f"\n get getSuccessors  : {currentSimState}\n")
+        fringe = problem.getSuccessors(currentSimState)
+        for neighborState in fringe:
+            print(f"\nneighbor: {neighborState}")
+            if neighborState[0] not in explored:
+                print(f"\n new state activated \n")
+                parent[neighborState[0]] = currentSimState
+                explored.append(neighborState[0])
+                stack.push(neighborState[0])
+
+    print(f"\n {parent}")
+
+    while path[-1] != start:
+        path.append(parent[path[-1]])
+
+
+    path = list(reversed(path))
+    print(f"\npath: {path}")
+
+    for i in range(len(path) - 1):
+        
+
+        current_item = path[i]
+        next_item = path[i + 1]
+        
+        if current_item[0] == next_item[0] + 1:
+            answer.append(West)
+        elif current_item[0] == next_item[0] - 1:
+            answer.append(East)
+        elif current_item[1] == next_item[1] + 1:
+            answer.append(South)
+        elif current_item[1] == next_item[1] - 1:
+            answer.append(North)
+        print(f"\ncurrent: {current_item} next: {next_item} answer: {answer[-1]}")
+    return answer
 
     """ psuedo code for DFS
 
     while stack is not empty:
         currentSimState = util.pop(stack)
-        process(current_node)
 
-        if current_node == goal:
-            return return(path to goal)
+        if problem.isGoalState(currentSimState):
+            path = [end]
+            break
         
-        for each neighbor in fringe:
-            if neighbor is not in explored:
-                explored.push(neighbor)
+        for each neighborState in fringe:
+            if neighborState is not in explored:
+                parent[neighbor] = currentSimState
+                explored.append(neighbor)
                 util.push(neighbor)
-                problem.isGoalState(neighbor)
-    """
+
+    
+    while path[-1] != start:
+        path.append(parent[path[-1]])
+
+    for state in list(reversed(path)):
+        answer = state[1]
+    return answer
+
+        """
 
 
-    print()
+    print("")
     return answer
     
 
