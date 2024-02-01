@@ -81,13 +81,56 @@ def depthFirstSearch(problem: SearchProblem):
 
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
+"""
+    from game import Directions
+    North = Directions.NORTH
+    East = Directions.EAST
+    South = Directions.SOUTH
+    West = Directions.WEST
+    answer = []
+    currentSimState = []
+    explored = [problem.getStartState()]
+    stack = util.Stack()
+    stack.push(problem.getStartState())
+    print(f"\nexplored: {explored}")
 
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+    print("\nStart:", problem.getStartState())
+    print("\nIs the start a goal?", problem.isGoalState(problem.getStartState()))
+    print("\nStart's successors:", problem.getSuccessors(problem.getStartState()))
+
+
+    fringe = problem.getSuccessors(problem.getStartState())
+    print("\nfringe: ", fringe)
+
+    currentSimState = fringe[0][0]
+    print("\nIs the currentSimState a goal?", problem.isGoalState(problem.getStartState()))
+    print("\nSimulate South:", problem.getSuccessors(fringe[0][0]))
+
+
+
+    """ psuedo code for DFS
+
+    while stack is not empty:
+        currentSimState = util.pop(stack)
+        process(current_node)
+
+        if current_node == goal:
+            return return(path to goal)
+        
+        for each neighbor in fringe:
+            if neighbor is not in explored:
+                explored.push(neighbor)
+                util.push(neighbor)
+                problem.isGoalState(neighbor)
     """
+
+
+    print()
+    return answer
+    
+
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # util.raiseNotDefined()
 
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
