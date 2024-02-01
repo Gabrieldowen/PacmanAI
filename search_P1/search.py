@@ -16,7 +16,7 @@
 In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
 """
-
+from game import Directions
 import util
 
 class SearchProblem:
@@ -82,114 +82,38 @@ def depthFirstSearch(problem: SearchProblem):
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
 """
-    from game import Directions
-    North = Directions.NORTH
-    East = Directions.EAST
-    South = Directions.SOUTH
-    West = Directions.WEST
     answer = []
     currentSimState = []
     explored = [problem.getStartState()]
     stack = util.Stack()
     parent = {}
 
-    
-    
-    """
-    print(f"\nexplored: {explored}")
-
-    print("\nStart:", problem.getStartState())
-    print("\nIs the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("\nStart's successors:", problem.getSuccessors(problem.getStartState()))
-
-
-    
-    print("\nfringe: ", fringe)
-
-    currentSimState = fringe[0][0]
-    print("\nIs the currentSimState a goal?", problem.isGoalState(currentSimState)
-    print("\nSimulate South:", problem.getSuccessors(fringe[0][0]))
-    """
     start = problem.getStartState()
     stack.push(start)
     while stack:
         currentSimState = stack.pop()
 
-        print(f"\n Goal{currentSimState}? {problem.isGoalState(currentSimState)}\n")
         if problem.isGoalState(currentSimState):
-            print(f"\n Goal Found \n")
             path = [currentSimState]
             break
 
-
-        print(f"\n get getSuccessors  : {currentSimState}\n")
         fringe = problem.getSuccessors(currentSimState)
         for neighborState in fringe:
-            print(f"\nneighbor: {neighborState}")
             if neighborState[0] not in explored:
-                print(f"\n new state activated \n")
-                parent[neighborState[0]] = currentSimState
+                parent[neighborState[0]] = [currentSimState, neighborState[1]]
                 explored.append(neighborState[0])
                 stack.push(neighborState[0])
 
-    print(f"\n {parent}")
-
     while path[-1] != start:
-        path.append(parent[path[-1]])
+        answer.append(parent[path[-1]][1])
+        path.append(parent[path[-1]][0])
 
+        print(f"\n answer: {answer} path: {path}")
 
-    path = list(reversed(path))
-    print(f"\npath: {path}")
+    answer = list(reversed(answer))
 
-    for i in range(len(path) - 1):
-        
-
-        current_item = path[i]
-        next_item = path[i + 1]
-        
-        if current_item[0] == next_item[0] + 1:
-            answer.append(West)
-        elif current_item[0] == next_item[0] - 1:
-            answer.append(East)
-        elif current_item[1] == next_item[1] + 1:
-            answer.append(South)
-        elif current_item[1] == next_item[1] - 1:
-            answer.append(North)
-        print(f"\ncurrent: {current_item} next: {next_item} answer: {answer[-1]}")
-    return answer
-
-    """ psuedo code for DFS
-
-    while stack is not empty:
-        currentSimState = util.pop(stack)
-
-        if problem.isGoalState(currentSimState):
-            path = [end]
-            break
-        
-        for each neighborState in fringe:
-            if neighborState is not in explored:
-                parent[neighbor] = currentSimState
-                explored.append(neighbor)
-                util.push(neighbor)
-
-    
-    while path[-1] != start:
-        path.append(parent[path[-1]])
-
-    for state in list(reversed(path)):
-        answer = state[1]
-    return answer
-
-        """
-
-
-    print("")
     return answer
     
-
-    "*** YOUR CODE HERE ***"
-    # util.raiseNotDefined()
 
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
