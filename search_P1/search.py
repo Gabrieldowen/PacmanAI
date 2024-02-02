@@ -105,7 +105,7 @@ def depthFirstSearch(problem: SearchProblem):
         # loops through the fringe
         for fringeState in fringe:
 
-            # if a state in the fringe is not explored explore it & save corresponding info
+            # if a state in the fringe is not explored & save corresponding info
             if fringeState[0] not in explored:
                 parent[fringeState[0]] = [currentSimState, fringeState[1]]
                 
@@ -125,8 +125,48 @@ def depthFirstSearch(problem: SearchProblem):
 
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    answer = []
+    currentSimState = []
+    explored = []
+    queue = util.Queue()
+    parent = {}
+    start = problem.getStartState()
+    
+    queue.push(start)
+    while queue:
+
+        currentSimState = queue.pop()
+        while currentSimState in explored:
+            currentSimState = queue.pop()
+        explored.append(currentSimState)
+
+
+        # break if you find the goal
+        if problem.isGoalState(currentSimState):
+            path = [currentSimState]
+            break
+
+        # gets the fringe
+        fringe = problem.getSuccessors(currentSimState)
+
+        # loops through the fringe
+        for fringeState in fringe:
+            
+            # explored doesnt get updated until fringe duplicates are added
+            if fringeState[0] not in explored:
+                print(f"\n {fringeState[0]} is not in {explored}:")
+                parent[fringeState[0]] = [currentSimState, fringeState[1]]
+                queue.push(fringeState[0])
+
+    # once you have found the goal get the path from finish to start
+    while path[-1] != start:
+        answer.append(parent[path[-1]][1])
+        path.append(parent[path[-1]][0])
+
+    # reverse list to be start to finish
+    answer = list(reversed(answer))
+
+    return answer
 
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
