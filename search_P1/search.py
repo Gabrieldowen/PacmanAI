@@ -102,14 +102,15 @@ def depthFirstSearch(problem: SearchProblem):
         fringe = problem.getSuccessors(currentSimState)
 
         # loops through the fringe
-        for neighborState in fringe:
+        for fringeState in fringe:
 
             # if a state in the fringe is not explored explore it & save corresponding info
-            if neighborState[0] not in explored:
-                parent[neighborState[0]] = [currentSimState, neighborState[1]]
-                explored.append(neighborState[0])
-                stack.push(neighborState[0])
-
+            if fringeState[0] not in explored:
+                parent[fringeState[0]] = [currentSimState, fringeState[1]]
+                explored.append(fringeState[0])
+                stack.push(fringeState[0])
+                # these are not explored yet
+    
     # once you have found the goal get the path from finish to start
     while path[-1] != start:
         answer.append(parent[path[-1]][1])
