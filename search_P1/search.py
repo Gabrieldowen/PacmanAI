@@ -240,8 +240,53 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    answer = []
+    explored = []
+    parent = {}
+    start = problem.getStartState()
+    queue = util.PriorityQueueWithFunction(heuristic)
+
+    
+    queue.push(start, heuristic)
+    while queue:
+
+        # gets next node as long as its not explored
+        currentSimState = queue.pop()
+        while currentSimState in explored:
+            currentSimState = queue.pop()
+        explored.append(currentSimState)
+
+
+        # break if you find the goal
+        if problem.isGoalState(currentSimState):
+            path = [currentSimState]
+            break
+
+        # gets the fringe
+        fringe = problem.getSuccessors(currentSimState)
+
+        # loops through the fringe
+        for fringeState in fringe:
+            
+            # explored doesnt get updated until fringe duplicates are added
+            if fringeState[0] not in explored:
+
+                # only give node a parent if it does have one
+                if fringeState[0] not in parent:
+                    parent[fringeState[0]] = [currentSimState, fringeState[1]]
+
+                # and next layer to queue
+                queue.push(fringeState[0])
+
+    # once you have found the goal get the path from finish to start
+    while path[-1] != start:
+        answer.append(parent[path[-1]][1])
+        path.append(parent[path[-1]][0])
+
+    # reverse list to be start to finish
+    answer = list(reversed(answer))
+
+    return answer
 
 
 # Abbreviations
