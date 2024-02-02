@@ -84,40 +84,65 @@ def depthFirstSearch(problem: SearchProblem):
 """
     answer = []
     currentSimState = []
-    explored = [problem.getStartState()]
+    explored = []
+    path = []
     stack = util.Stack()
     parent = {}
     start = problem.getStartState()
-    
+    print(f"\nstart: {start}")
     stack.push(start)
     while stack:
+
         currentSimState = stack.pop()
+        path.append(currentSimState)
+        explored.append(currentSimState)
+
+        
 
         # break if you find the goal
         if problem.isGoalState(currentSimState):
-            path = [currentSimState]
             break
 
         # gets the fringe
         fringe = problem.getSuccessors(currentSimState)
+        print(f"\nat: {currentSimState} fringe:{fringe}")
 
         # loops through the fringe
+        DeadEnd = True
         for fringeState in fringe:
 
             # if a state in the fringe is not explored explore it & save corresponding info
             if fringeState[0] not in explored:
-                parent[fringeState[0]] = [currentSimState, fringeState[1]]
-                explored.append(fringeState[0])
                 stack.push(fringeState[0])
-                # these are not explored yet
+                DeadEnd = False
+
+        if DeadEnd:
+            path.pop()
     
     # once you have found the goal get the path from finish to start
+    """
     while path[-1] != start:
-        answer.append(parent[path[-1]][1])
+        # answer.append(parent[path[-1]][1])
         path.append(parent[path[-1]][0])
-
+"""
     # reverse list to be start to finish
-    answer = list(reversed(answer))
+    for i in range(len(path) - 1):
+
+
+        current_item = path[i]
+        next_item = path[i + 1]
+
+        if current_item[0] == next_item[0] + 1:
+            answer.append(Directions.WEST)
+        elif current_item[0] == next_item[0] - 1:
+            answer.append(Directions.EAST)
+        elif current_item[1] == next_item[1] + 1:
+            answer.append(Directions.SOUTH)
+        elif current_item[1] == next_item[1] - 1:
+            answer.append(Directions.NORTH)
+        print(f"\ncurrent: {current_item} next: {next_item} answer: {answer[-1]}")
+
+    # answer = list(reversed(answer))
 
     return answer
 
