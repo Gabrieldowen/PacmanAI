@@ -81,7 +81,7 @@ def depthFirstSearch(problem: SearchProblem):
 
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
-"""
+    """
     answer = []
     explored = [problem.getStartState()]
     stack = util.Stack()
@@ -178,8 +178,8 @@ def uniformCostSearch(problem: SearchProblem):
     queue = util.PriorityQueue()
     parent = {}
     start = problem.getStartState()
-    
     queue.push(start, 0)
+    currentCost = 0
     while queue:
 
         # gets next node as long as its not explored
@@ -194,47 +194,42 @@ def uniformCostSearch(problem: SearchProblem):
             path = [currentSimState]
             break
 
-            """
-        # gets the fringe and filters out explored states and sorts by value
-        fringe = problem.getSuccessors(currentSimState)
-        unexploredFringe = [x for x in fringe if x not in explored]
-        sortedFringe = sorted(unexploredFringe, key=lambda x: x[2])
-    """
+        # print("\n\n*** BREAK ***\n\n")
 
-        print("\n\n*** BREAK ***\n\n")
         # gets the fringe
         fringe = problem.getSuccessors(currentSimState)
 
         # loops through the fringe
         for fringeState in fringe:
-            
+
             # explored doesnt get updated until fringe duplicates are added
             if fringeState[0] not in explored:
 
-                # only give node a parent if it does have one
-                if fringeState[0] not in parent:
-                    parent[fringeState[0]] = [currentSimState, fringeState[1]]
+                # gets the cost of the current node
+                if currentSimState in parent:
+                    currentCost = parent[currentSimState][2]
 
+                # add the cost of the node in the parent dictionary. Format as follows
+                # {child: ["childs parent", "move from parent to child", "cost to get to child from start"]}
+                newCost = fringeState[2] + currentCost
+                if fringeState[0] not in parent or parent[fringeState[0]][2] > newCost:
+                    parent[fringeState[0]] = [currentSimState, fringeState[1], newCost]
+                    print(f"\n {fringeState[0]}: {parent[fringeState[0]]} ")
+
+                else:
+                    parent[fringeState[0]][2] += currentCost
+
+                # print(f"\n at: {currentSimState} fringe: {fringeState[0]} costToQueue ({fringeState[2]} + {currentCost}): {fringeState[2] + currentCost}")
+                
 
                 # and next layer to queue
-                queue.push(fringeState[0], fringeState[2])
+                queue.push(fringeState[0], fringeState[2] + currentCost)
 
-        # loops through the fringe
-        """
-        for fringeState in sortedFringe:
-            
-            print(f"\n {fringeState}")
 
-            # only give node a parent if it does have one
-            if fringeState[0] not in parent:
-                parent[fringeState[0]] = [currentSimState, fringeState[1]]
-
-            # and next layer to queue
-            queue.push(fringeState[0])
-            """
 
     # once you have found the goal get the path from finish to start
     while path[-1] != start:
+        print(f"\n yes: {parent[path[-1]][1]}")
         answer.append(parent[path[-1]][1])
         path.append(parent[path[-1]][0])
 
