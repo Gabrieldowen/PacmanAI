@@ -188,13 +188,10 @@ def uniformCostSearch(problem: SearchProblem):
             currentSimState = queue.pop()
         explored.append(currentSimState)
 
-
         # break if you find the goal
         if problem.isGoalState(currentSimState):
             path = [currentSimState]
             break
-
-        # print("\n\n*** BREAK ***\n\n")
 
         # gets the fringe
         fringe = problem.getSuccessors(currentSimState)
@@ -214,12 +211,8 @@ def uniformCostSearch(problem: SearchProblem):
                 newCost = fringeState[2] + currentCost
                 if fringeState[0] not in parent or parent[fringeState[0]][2] > newCost:
                     parent[fringeState[0]] = [currentSimState, fringeState[1], newCost]
-                    print(f"\n {fringeState[0]}: {parent[fringeState[0]]} ")
-
                 else:
                     parent[fringeState[0]][2] += currentCost
-
-                # print(f"\n at: {currentSimState} fringe: {fringeState[0]} costToQueue ({fringeState[2]} + {currentCost}): {fringeState[2] + currentCost}")
                 
 
                 # and next layer to queue
