@@ -175,11 +175,11 @@ def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
     answer = []
     explored = []
-    queue = util.Queue()
+    queue = util.PriorityQueue()
     parent = {}
     start = problem.getStartState()
     
-    queue.push(start)
+    queue.push(start, 0)
     while queue:
 
         # gets next node as long as its not explored
@@ -194,14 +194,33 @@ def uniformCostSearch(problem: SearchProblem):
             path = [currentSimState]
             break
 
+            """
         # gets the fringe and filters out explored states and sorts by value
         fringe = problem.getSuccessors(currentSimState)
         unexploredFringe = [x for x in fringe if x not in explored]
         sortedFringe = sorted(unexploredFringe, key=lambda x: x[2])
-
+    """
 
         print("\n\n*** BREAK ***\n\n")
+        # gets the fringe
+        fringe = problem.getSuccessors(currentSimState)
+
         # loops through the fringe
+        for fringeState in fringe:
+            
+            # explored doesnt get updated until fringe duplicates are added
+            if fringeState[0] not in explored:
+
+                # only give node a parent if it does have one
+                if fringeState[0] not in parent:
+                    parent[fringeState[0]] = [currentSimState, fringeState[1]]
+
+
+                # and next layer to queue
+                queue.push(fringeState[0], fringeState[2])
+
+        # loops through the fringe
+        """
         for fringeState in sortedFringe:
             
             print(f"\n {fringeState}")
@@ -212,6 +231,7 @@ def uniformCostSearch(problem: SearchProblem):
 
             # and next layer to queue
             queue.push(fringeState[0])
+            """
 
     # once you have found the goal get the path from finish to start
     while path[-1] != start:
