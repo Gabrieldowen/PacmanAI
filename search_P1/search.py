@@ -83,7 +83,6 @@ def depthFirstSearch(problem: SearchProblem):
     understand the search problem that is being passed in:
 """
     answer = []
-    currentSimState = []
     explored = [problem.getStartState()]
     stack = util.Stack()
     parent = {}
@@ -126,7 +125,6 @@ def depthFirstSearch(problem: SearchProblem):
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
     answer = []
-    currentSimState = []
     explored = []
     queue = util.Queue()
     parent = {}
@@ -175,8 +173,55 @@ def breadthFirstSearch(problem: SearchProblem):
 
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    answer = []
+    explored = []
+    queue = util.Queue()
+    parent = {}
+    start = problem.getStartState()
+    
+    queue.push(start)
+    while queue:
+
+        # gets next node as long as its not explored
+        currentSimState = queue.pop()
+        while currentSimState in explored:
+            currentSimState = queue.pop()
+        explored.append(currentSimState)
+
+
+        # break if you find the goal
+        if problem.isGoalState(currentSimState):
+            path = [currentSimState]
+            break
+
+        # gets the fringe and filters out explored states and sorts by value
+        fringe = problem.getSuccessors(currentSimState)
+        unexploredFringe = [x for x in fringe if x not in explored]
+        sortedFringe = sorted(unexploredFringe, key=lambda x: x[2])
+
+
+        print("\n\n*** BREAK ***\n\n")
+        # loops through the fringe
+        for fringeState in sortedFringe:
+            
+            print(f"\n {fringeState}")
+
+            # only give node a parent if it does have one
+            if fringeState[0] not in parent:
+                parent[fringeState[0]] = [currentSimState, fringeState[1]]
+
+            # and next layer to queue
+            queue.push(fringeState[0])
+
+    # once you have found the goal get the path from finish to start
+    while path[-1] != start:
+        answer.append(parent[path[-1]][1])
+        path.append(parent[path[-1]][0])
+
+    # reverse list to be start to finish
+    answer = list(reversed(answer))
+
+    return answer
 
 def nullHeuristic(state, problem=None):
     """
