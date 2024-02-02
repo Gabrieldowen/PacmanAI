@@ -92,6 +92,7 @@ def depthFirstSearch(problem: SearchProblem):
     stack.push(start)
     while stack:
         currentSimState = stack.pop()
+        explored.append(currentSimState)
 
         # break if you find the goal
         if problem.isGoalState(currentSimState):
@@ -107,7 +108,7 @@ def depthFirstSearch(problem: SearchProblem):
             # if a state in the fringe is not explored explore it & save corresponding info
             if fringeState[0] not in explored:
                 parent[fringeState[0]] = [currentSimState, fringeState[1]]
-                explored.append(fringeState[0])
+                
                 stack.push(fringeState[0])
                 # these are not explored yet
     
