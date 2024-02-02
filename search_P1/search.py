@@ -135,6 +135,7 @@ def breadthFirstSearch(problem: SearchProblem):
     queue.push(start)
     while queue:
 
+        # gets next node as long as its not explored
         currentSimState = queue.pop()
         while currentSimState in explored:
             currentSimState = queue.pop()
@@ -154,8 +155,12 @@ def breadthFirstSearch(problem: SearchProblem):
             
             # explored doesnt get updated until fringe duplicates are added
             if fringeState[0] not in explored:
-                print(f"\n {fringeState[0]} is not in {explored}:")
-                parent[fringeState[0]] = [currentSimState, fringeState[1]]
+
+                # only give node a parent if it does have one
+                if fringeState[0] not in parent:
+                    parent[fringeState[0]] = [currentSimState, fringeState[1]]
+
+                # and next layer to queue
                 queue.push(fringeState[0])
 
     # once you have found the goal get the path from finish to start
