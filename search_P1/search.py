@@ -242,20 +242,18 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     answer = []
     explored = []
-    parent = {}
+    queue = util.PriorityQueue()
+    parent = {} # {'state': ['parent', 'action', 'cost']}
     start = problem.getStartState()
-    queue = util.PriorityQueueWithFunction(heuristic)
+    queue.push(start, 0)
+    currentCost = 0
 
-    
-    queue.push(start, heuristic)
     while queue:
-
         # gets next node as long as its not explored
         currentSimState = queue.pop()
         while currentSimState in explored:
             currentSimState = queue.pop()
         explored.append(currentSimState)
-
 
         # break if you find the goal
         if problem.isGoalState(currentSimState):
@@ -267,19 +265,30 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
 
         # loops through the fringe
         for fringeState in fringe:
-            
             # explored doesnt get updated until fringe duplicates are added
             if fringeState[0] not in explored:
 
-                # only give node a parent if it does have one
-                if fringeState[0] not in parent:
-                    parent[fringeState[0]] = [currentSimState, fringeState[1]]
+                # gets the cost of the current node
+                if currentSimState in parent:
+                    currentCost = parent[currentSimState][2]
 
+                # add the cost of the node in the parent dictionary. Format as follows
+                # {child: ["childs parent", "move from parent to child", "cost to get to child from start"]}
+                g = fringeState[2] + currentCost    # Get the total cost up to the current node
+                h = heuristic(fringeState[0], problem)  # Get the heuristic value for the current node
+                if fringeState[0] not in parent or parent[fringeState[0]][2] > g:
+                    parent[fringeState[0]] = [currentSimState, fringeState[1], g]
+                else:
+                    parent[fringeState[0]][2] += currentCost    # Update cost if already in parent and the new total cost <= previous
+                
                 # and next layer to queue
-                queue.push(fringeState[0])
+                queue.push(fringeState[0], g + h)   # Add state to priority queue with priority g + h (cost to that point + heuristic)
+
+
 
     # once you have found the goal get the path from finish to start
     while path[-1] != start:
+        print(f"\n yes: {parent[path[-1]][1]}")
         answer.append(parent[path[-1]][1])
         path.append(parent[path[-1]][0])
 
@@ -287,7 +296,6 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     answer = list(reversed(answer))
 
     return answer
-
 
 # Abbreviations
 bfs = breadthFirstSearch
