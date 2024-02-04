@@ -243,9 +243,9 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     answer = []
     explored = []
     queue = util.PriorityQueue()
-    parent = {} # {'state': ['parent', 'action', 'cost']}
+    parent = {} # {'child': ['parent of child', 'action from parent to child', 'cost from start']}
     start = problem.getStartState()
-    queue.push(start, 0)
+    queue.push(start, heuristic(start, problem))
     currentCost = 0
 
     while queue:
@@ -274,15 +274,15 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
 
                 # add the cost of the node in the parent dictionary. Format as follows
                 # {child: ["childs parent", "move from parent to child", "cost to get to child from start"]}
-                g = fringeState[2] + currentCost    # Get the total cost up to the current node
+                newCost = fringeState[2] + currentCost    # Get the total cost up to the current node (g value)
                 h = heuristic(fringeState[0], problem)  # Get the heuristic value for the current node
-                if fringeState[0] not in parent or parent[fringeState[0]][2] > g:
-                    parent[fringeState[0]] = [currentSimState, fringeState[1], g]
-                else:
-                    parent[fringeState[0]][2] += currentCost    # Update cost if already in parent and the new total cost <= previous
+                # If this child is not in the parent list add it
+                # Or, if it is in the parent but the new cost is less than the old one, update this tuple
+                if fringeState[0] not in parent or parent[fringeState[0]][2] > newCost:
+                    parent[fringeState[0]] = [currentSimState, fringeState[1], newCost]
                 
                 # and next layer to queue
-                queue.push(fringeState[0], g + h)   # Add state to priority queue with priority g + h (cost to that point + heuristic)
+                queue.push(fringeState[0], newCost + h)   # Add state to priority queue with priority g + h (cost to that point + heuristic)
 
 
 
