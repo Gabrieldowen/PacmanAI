@@ -289,21 +289,21 @@ class CornersProblem(search.SearchProblem):
             if not startingGameState.hasFood(*corner):
                 print('Warning: no food in corner ' + str(corner))
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
+        self.cost = 1
 
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # The state representation is (position, corners left)
+        return (self.startingPosition, self.corners)    # Return the starting position from the starting game state as well as the list of all corners to be visited
 
     def isGoalState(self, state: Any):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return len(state[1]) == 0   # state[1] is a tuple of corners left to visit. If it is length 0, then all corners have been visited
 
     def getSuccessors(self, state: Any):
         """
@@ -317,15 +317,24 @@ class CornersProblem(search.SearchProblem):
         """
 
         successors = []
+        pos = state[0]  # Position of the current state
+        corners = state[1] # Corners left to be visited from the current state
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
-            # Here's a code snippet for figuring out whether a new position hits a wall:
-            #   x,y = currentPosition
-            #   dx, dy = Actions.directionToVector(action)
-            #   nextx, nexty = int(x + dx), int(y + dy)
-            #   hitsWall = self.walls[nextx][nexty]
-
-            "*** YOUR CODE HERE ***"
+            x,y = state[0]
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            hitsWall = self.walls[nextx][nexty]
+            if not hitsWall:
+                nextPos = (nextx, nexty)    # Position of next state
+                remainingCorners = []   # The corners left to be visited
+                # Add unvisited corners to the next state's list of remaining corners
+                for x in corners:
+                    # If the position of the next state is a corner, then don't add it to the remaining states because it will be visited
+                    if x != nextPos:
+                        remainingCorners.append(x)
+                remainingCorners = tuple(remainingCorners)  # Convert to tuple
+                successors.append( ( (nextPos, remainingCorners), action, self.cost) )  # Return the next state, the action take, and cost always = 1
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
