@@ -377,16 +377,16 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     remainingCorners = state[1]
 
     """
-    This heuristic is consistent. For each position in the maze, the manhattan distance from the current position
-    to the nearest corner should be 1 less than the next tile pacman is moving to because we are always moving towards
-    the nearest corner. The actual distance of the next tile pacman moves to is always 1. So it should be consistent.
+    This heuristic is consistent. For any state in the maze and its next state, they will always be adjacent.
+    Their heuristic values will always be within 1 of each other, and moving from the current state to the
+    next will always cost 1. So, h(A) - h(C) <= 1 or h(A) <= 1 + h(C) will hold.
     """
     distance = []    # Store the heuristics to each corner from the current position
     for corner in remainingCorners:
         # Calculate the Manhattan distance from the current distance to the current corner (in the for loop)
         distance.append(abs(position[0] - corner[0]) + abs(position[1] - corner[1]))
         # Calculate the Euclidean distance from the current distance to the current corner (in the for loop)
-        #distance.append(( (position[0] - corner[0]) ** 2 + (position[1] - corner[1]) ** 2 ) ** 0.5)
+        # distance.append(( (position[0] - corner[0]) ** 2 + (position[1] - corner[1]) ** 2 ) ** 0.5)
 
     return abs(min(distance)) # Return the minimum heuristic distance to a corner
 
