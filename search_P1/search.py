@@ -242,7 +242,7 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     answer = []
     explored = []
-    queue = util.PriorityQueue()
+    queue = util.PriorityQueue()    # Queue to keep track of node with lowest cost
     parent = {} # {'child': ['parent of child', 'action from parent to child', 'cost from start']}
     start = problem.getStartState()
     queue.push(start, heuristic(start, problem))
