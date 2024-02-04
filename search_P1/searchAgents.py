@@ -329,10 +329,10 @@ class CornersProblem(search.SearchProblem):
                 nextPos = (nextx, nexty)    # Position of next state
                 remainingCorners = []   # The corners left to be visited
                 # Add unvisited corners to the next state's list of remaining corners
-                for x in corners:
+                for cor in corners:
                     # If the position of the next state is a corner, then don't add it to the remaining states because it will be visited
-                    if x != nextPos:
-                        remainingCorners.append(x)
+                    if cor != nextPos:
+                        remainingCorners.append(cor)
                 remainingCorners = tuple(remainingCorners)  # Convert to tuple
                 successors.append( ( (nextPos, remainingCorners), action, self.cost) )  # Return the next state, the action take, and cost always = 1
 
@@ -370,7 +370,23 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    position = state[0]
+    remainingCorners = state[1]
+    """
+    Minimum heuristic distance to a corner, intialize to a value that will always be greater than or equal to the
+    smallest manhattan distance from this current position.
+    """
+
+    distance = []    # Store the heuristics to each corner from the current position
+    for corner in remainingCorners:
+        # Calculate the Manhattan distance from the current distance to the current corner (in the for loop)
+        distance.append(abs(position[0] - corner[0]) + abs(position[1] - corner[1]))
+        # Calculate the Euclidean distance from the current distance to the current corner (in the for loop)
+        #distance.append(( (position[0] - corner[0]) ** 2 + (position[1] - corner[1]) ** 2 ) ** 0.5)
+
+    if len(distance) == 0:    # If distance is empty, return 0
+        return 0
+    return min(distance) # Return the minimum heuristic distance to a corner
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
