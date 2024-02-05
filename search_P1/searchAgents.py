@@ -482,7 +482,18 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+
+    distance = [] # List to store distances from the current position to food pellets
+    for pellet in foodGrid.asList():
+        #distance.append( ( (position[0] - pellet[0])**2 + (position[1] - pellet[1])**2 )**0.5 )
+        distance.append( abs(position[0] - pellet[0]) + abs(position[1] - pellet[1]) ) # Manhattan distance to pellet from current position
+
+    # If distance list is empty, return 0
+    if len(distance) == 0:
+        return 0
+
+    return abs(min(distance)) # Return the smallest positive Manhattan distance to a food pellet
+    #return 0
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
