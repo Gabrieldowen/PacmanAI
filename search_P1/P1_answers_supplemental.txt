@@ -1,0 +1,50 @@
+Gabriel Owen and Sam Bonsteel 
+Group 18
+
+Q1.1
+
+For DFS a stack is the best data structure to use. It makes it easy to access the items most recently added.
+
+Q1.2
+
+Yes it is what I expected. No he does not go to all the explored squares on his way to the goal.
+
+Q2.1
+
+For BFS a queue is the perfect data structure. It allows you to add nodes on the fringe in the order they need to be explored. It is first come first served.
+
+Q3.1
+
+The cost function depends on which agent is used. Typically weighing moves that bring the pacman closer to the food higher. Then punishing for comming in contact with a ghost.
+
+Q4.1
+
+The null heuristic doesnt provides any estimates. It is a placeholder for when there is not a real hearistic available.
+Manhattan distance actually finds a value that, as long as the agents follows the rules, is useful as a minimal path. This is because it is a straight line. nullHeuristic is not optimal. Manhatten is better because it gives an actual estimation
+
+Q4.2
+
+For null heuristic it is sparatic and nearly expands the entire map
+
+For manhatten heuristic it avoids areas that would require the pacman to move away from the dot. However it does reach one big dead end because manhatten heuristic ignores walls and obsticles
+
+Q5.1
+
+The number of corners, if the gamestate has food, walls, starting position and number of nodes expanded
+
+Q5.2
+
+add a direction to the starting position. If you dont hit a wall update the position. Then loop through the remaining corners and if they are not in the same place as agent position add them to list of remaining corners. Loop until all corners are found/expanded.
+
+
+Q6.1 
+
+Manhatten Hueristic. the heuristic is consistent however it is weak to dead ends in the direction of the goal state. This is because the Manhatten Hueristic ignores walls and obstacles.
+
+Q7.1
+
+Manhatten Hueristic. the heuristic is consistent however it is weak to dead ends in the direction of the goal state. This is because the Manhatten Hueristic ignores walls and obstacles.
+
+Q8.1
+
+My solution was to take the position of the agent and check it against food grid. If it is a food then return as a goal state. The problem is that sometimes its more effiecient to go to a food thats further away to reduce the amount you have to retrace your steps. For example you would want to head down a dead end to get food at the end so you dont have to walk out of it.
