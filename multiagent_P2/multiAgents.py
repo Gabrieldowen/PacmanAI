@@ -48,7 +48,8 @@ class ReflexAgent(Agent):
         bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
         chosenIndex = random.choice(bestIndices) # Pick randomly among the best
 
-        "Add more of your code here if you want to"
+        # print(f"legal: {legalMoves}\n scores: {scores}\n bestScores: {bestScore}\n bestIndices{bestIndices} \nchosenIndex:{chosenIndex}\n")
+        #"Add more of your code here if you want to"
 
         return legalMoves[chosenIndex]
 
@@ -74,7 +75,21 @@ class ReflexAgent(Agent):
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
+        dangerousSpots = []
+
         "*** YOUR CODE HERE ***"
+        print(f"\n******************\n successorGameState.score: {successorGameState.getScore()}\n newPos: {newPos}\n")
+        print(f"newFood: {newFood}\n newGhostStates: {newGhostStates[0].getPosition()}: {type(newGhostStates[0].getPosition())}\n newScaredTimes: {newScaredTimes}")
+        for ghostPOS in newGhostStates:
+            dangerSpot = ghostPOS.getPosition()
+
+            dangerousSpots.append(((dangerSpot[0]-1), dangerSpot[1]))
+            dangerousSpots.append(((dangerSpot[0]+1), dangerSpot[1]))
+            dangerousSpots.append(((dangerSpot[0]), dangerSpot[1]-1))
+            dangerousSpots.append(((dangerSpot[0]), dangerSpot[1]+1))
+
+        print(f"\ndagnerSpots: {dangerousSpots}")
+
         return successorGameState.getScore()
 
 def scoreEvaluationFunction(currentGameState: GameState):
