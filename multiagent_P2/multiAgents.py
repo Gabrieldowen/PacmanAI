@@ -73,24 +73,49 @@ class ReflexAgent(Agent):
         newPos = successorGameState.getPacmanPosition()
         newFood = successorGameState.getFood()
         newGhostStates = successorGameState.getGhostStates()
-        newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+        newScaredTimes = [(ghostState.getPosition(), ghostState.scaredTimer) for ghostState in newGhostStates]
 
         dangerousSpots = []
+        foodDistances = []
+        ghostDistances = []
+        penalty = 0
+        minFood = 0.1
 
-        "*** YOUR CODE HERE ***"
-        print(f"\n******************\n successorGameState.score: {successorGameState.getScore()}\n newPos: {newPos}\n")
-        print(f"newFood: {newFood}\n newGhostStates: {newGhostStates[0].getPosition()}: {type(newGhostStates[0].getPosition())}\n newScaredTimes: {newScaredTimes}")
-        for ghostPOS in newGhostStates:
-            dangerSpot = ghostPOS.getPosition()
+        # gets the distances to food
+        foodSpots = newFood.asList()
+        for food in foodSpots:
+            foodDistances.append((manhattanDistance(newPos, food), newPos))
 
-            dangerousSpots.append(((dangerSpot[0]-1), dangerSpot[1]))
-            dangerousSpots.append(((dangerSpot[0]+1), dangerSpot[1]))
-            dangerousSpots.append(((dangerSpot[0]), dangerSpot[1]-1))
-            dangerousSpots.append(((dangerSpot[0]), dangerSpot[1]+1))
+        # gets closest food
+        if len(foodDistances) != 0:
+            minFood = min(foodDistances)[0]        
 
-        print(f"\ndagnerSpots: {dangerousSpots}")
+        # gets distances to ghosts
+        for ghost in newGhostStates:
+            ghostDistances.append((manhattanDistance(newPos, ghost.getPosition()), newPos))
 
-        return successorGameState.getScore()
+        # gets closest ghost
+        minGhost = min(ghostDistances)[0]
+
+
+        # gets areas where ghost could be
+        for (x, y) in newScaredTimes:
+             if y > 1:
+                dangerSpot = x
+                dangerousSpots.append(((dangerSpot[0]-1), dangerSpot[1]))
+                dangerousSpots.append(((dangerSpot[0]+1), dangerSpot[1]))
+                dangerousSpots.append(((dangerSpot[0]), dangerSpot[1]-1))
+                dangerousSpots.append(((dangerSpot[0]), dangerSpot[1]+1))
+
+        # punish bad decisions
+        if newPos in dangerousSpots:
+            penalty += 30 
+        if action == 'Stop':
+            penalty += 10
+
+
+
+        return successorGameState.getScore() + 10/minFood + minGhost/10 - penalty
 
 def scoreEvaluationFunction(currentGameState: GameState):
     """

@@ -1,1 +1,9 @@
 Gabriel owen && Samuel Bonsteel
+
+Q1.1:
+
+Before the agent was just based on where it currently was. Now It takes into consideration where the ghosts are and where they could move next as well as the power food. It also goes towards the nearest food. 
+
+Q1.2:
+the value function is 10/foodDistance + ghostDistance/10 - penalty. This way closer foods bring higher rewards and closer ghosts bring less reward. Then subtracting a penalty for remaining still and being near ghosts
+
