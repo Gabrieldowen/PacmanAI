@@ -178,29 +178,28 @@ class MinimaxAgent(MultiAgentSearchAgent):
         "*** YOUR CODE HERE ***"
 
         action = self.minimaxFunc(gameState, self.depth, self.index)
-        print(action)
+        print(f"final action {action}")
         return action[1]
 
 
-    def minimaxFunc(self, gameState, depth, index):
+    def minimaxFunc(self, gameState, depth, index, lastMove = ''):
 
         index = index % gameState.getNumAgents()
 
         # if tree is in terminal state
         if gameState.isWin() or gameState.isLose() or depth == 0:
-            # print(f"terminal state for agent{index}")
-            return (self.evaluationFunction(gameState), 'End/Loss')
+            # return the value of the terminal state
+            return (self.evaluationFunction(gameState), lastMove)
 
         # maximizing player
         if index == 0:            
             bestValue = (-1_000_000, 'def')
-            for move in gameState.getLegalActions(index):
-                # print(f"Pacman {depth} whos in front?")
-                newValue = self.minimaxFunc(gameState.generateSuccessor(index, move), depth-1, index+1)
-                # print(f"Node explored for {newValue}")
-                bestValue = (max(bestValue[0], newValue[0]), move)
 
-            # print(f"\n\n Found best move {bestValue} from {gameState.getLegalActions(index)} for agent: {index} depth: {depth}\n\n")
+            # go through each legal move
+            for move in gameState.getLegalActions(index):
+                newValue = self.minimaxFunc(gameState.generateSuccessor(index, move), depth-1, index+1, move)
+                bestValue = bestValue if bestValue[0] > newValue[0] else newValue
+            print(f"max {bestValue}")
             return bestValue
 
 
@@ -208,13 +207,10 @@ class MinimaxAgent(MultiAgentSearchAgent):
         else:
             bestValue = (1_000_000, 'def')
             for move in gameState.getLegalActions(index):
-                # print(f"Ghost {index} whos in front?")
-                newValue = self.minimaxFunc(gameState.generateSuccessor(index, move), depth, index+1)
-                # print(f"Node explored for {newValue}")
-                bestValue = (min(bestValue[0], newValue[0]), move)
+                newValue = self.minimaxFunc(gameState.generateSuccessor(index, move), depth, index+1, move)
 
-            # print(f"\n\n Found best move {bestValue} from {gameState.getLegalActions(index)} for agent: {index} depth: {depth}\n\n")
-            
+                bestValue = bestValue if bestValue[0] < newValue[0] else newValue
+            print(f"min {bestValue}")
             return bestValue
 
 
