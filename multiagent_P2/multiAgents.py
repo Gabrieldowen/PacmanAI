@@ -181,27 +181,21 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         for action in gameState.getLegalActions(0):
 
-            # print(f"try {action} from: {gameState.getLegalActions(0)}")
-            
-            # if i make the first move what is the reward from the rest of the moves
+
+            # if pacman makes the first move what is the reward from the rest of the moves
             newReward = self.minimaxFunc(gameState.generateSuccessor(self.index, action), self.depth, self.index + 1)
 
-           
+            # track the best reward and move
             if newReward > reward:
                 print(f"{action}: {newReward}")
                 reward = newReward
                 bestAction = action
 
-        # action = self.minimaxFunc(gameState, self.depth, self.index)
-        # print(f"final action {action} from {gameState.getLegalActions(0)}\n{str(gameState)}")
-
         return bestAction
-
-    # i think the problem is assinging the prevois move to the current agent
-    # need to call minimax for each move from start and only return the value
 
     def minimaxFunc(self, gameState, depth, index):
 
+        # makes sure index cycles
         index = index % gameState.getNumAgents()
 
         # if tree is in terminal state
@@ -209,27 +203,28 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
             return self.evaluationFunction(gameState)
             
+        # go to next depth after the last agent goes
+        if index+1 == gameState.getNumAgents():
+            depth -= 1
 
         # maximizing player
-        if index == 0:            
+        if index == 0:
+            # make no choice extrememly expenseive            
             bestValue = -1_000_000
+
             # go through each legal move
             for move in gameState.getLegalActions(index):
 
                 # get next state. If its terminal it returns here
-                newValue = self.minimaxFunc(gameState.generateSuccessor(index, move), depth-1, index+1)
+                newValue = self.minimaxFunc(gameState.generateSuccessor(index, move), depth, index+1)
                 bestValue = max(bestValue, newValue)
                 
-                #testing
-                #evalTupleList.append(newValue)
-
-            # print(f"Pacman max {bestValue} at {depth} from {evalTupleList} legal: {gameState.getLegalActions()}\n")
-            # print("**********************************************************\n")
             return bestValue
 
 
         # minimizing player
         else:
+            # make no choice extremely expensive
             bestValue = 1_000_000
             for move in gameState.getLegalActions(index):
 
@@ -237,11 +232,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 newValue = self.minimaxFunc(gameState.generateSuccessor(index, move), depth, index+1)
                 bestValue = min(bestValue, newValue)
 
-                #testing
-                #evalTupleList.append(newValue)
-
-            # print(f"agent{index} min at {depth}: ({bestValue} over {newValue})  from {evalTupleList} legal: {gameState.getLegalActions()}\n")
-            # print("**********************************************************\n")
             return bestValue
 
 

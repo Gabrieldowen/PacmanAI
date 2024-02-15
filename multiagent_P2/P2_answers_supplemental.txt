@@ -7,3 +7,5 @@ Before the agent was just based on where it currently was. Now It takes into con
 Q1.2:
 the value function is 10/foodDistance + ghostDistance/10 - penalty. This way closer foods bring higher rewards and closer ghosts bring less reward. Then subtracting a penalty for remaining still and being near ghosts
 
+Q2.1
+the algorithm uses a lot of recursion. The first step is the get pacmans options in the first for loop. Then for each option keep asking minimax function what the next moves value is until it gets to a recusive state. Then return that value all the was back up tracking max/min until you get the initial pacmans options
