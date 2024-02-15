@@ -48,7 +48,7 @@ class ReflexAgent(Agent):
         bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
         chosenIndex = random.choice(bestIndices) # Pick randomly among the best
 
-        # print(f"legal: {legalMoves}\n scores: {scores}\n bestScores: {bestScore}\n bestIndices{bestIndices} \nchosenIndex:{chosenIndex}\n")
+        # # print(f"legal: {legalMoves}\n scores: {scores}\n bestScores: {bestScore}\n bestIndices{bestIndices} \nchosenIndex:{chosenIndex}\n")
         #"Add more of your code here if you want to"
 
         return legalMoves[chosenIndex]
@@ -65,7 +65,7 @@ class ReflexAgent(Agent):
         newScaredTimes holds the number of moves that each ghost will remain
         scared because of Pacman having eaten a power pellet.
 
-        Print out these variables to see what you're getting, then combine them
+        # Print out these variables to see what you're getting, then combine them
         to create a masterful evaluation function.
         """
         # Useful information you can extract from a GameState (pacman.py)
@@ -176,7 +176,47 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        action = self.minimaxFunc(gameState, self.depth, self.index)
+        print(action)
+        return action[1]
+
+
+    def minimaxFunc(self, gameState, depth, index):
+
+        index = index % gameState.getNumAgents()
+
+        # if tree is in terminal state
+        if gameState.isWin() or gameState.isLose() or depth == 0:
+            # print(f"terminal state for agent{index}")
+            return (self.evaluationFunction(gameState), 'End/Loss')
+
+        # maximizing player
+        if index == 0:            
+            bestValue = (-1_000_000, 'def')
+            for move in gameState.getLegalActions(index):
+                # print(f"Pacman {depth} whos in front?")
+                newValue = self.minimaxFunc(gameState.generateSuccessor(index, move), depth-1, index+1)
+                # print(f"Node explored for {newValue}")
+                bestValue = (max(bestValue[0], newValue[0]), move)
+
+            # print(f"\n\n Found best move {bestValue} from {gameState.getLegalActions(index)} for agent: {index} depth: {depth}\n\n")
+            return bestValue
+
+
+        # minimizing player
+        else:
+            bestValue = (1_000_000, 'def')
+            for move in gameState.getLegalActions(index):
+                # print(f"Ghost {index} whos in front?")
+                newValue = self.minimaxFunc(gameState.generateSuccessor(index, move), depth, index+1)
+                # print(f"Node explored for {newValue}")
+                bestValue = (min(bestValue[0], newValue[0]), move)
+
+            # print(f"\n\n Found best move {bestValue} from {gameState.getLegalActions(index)} for agent: {index} depth: {depth}\n\n")
+            
+            return bestValue
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
