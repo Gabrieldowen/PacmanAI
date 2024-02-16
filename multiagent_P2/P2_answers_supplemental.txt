@@ -10,3 +10,9 @@ the value function is 10/foodDistance + ghostDistance/10 - penalty. This way clo
 Q2.1
 the algorithm uses a lot of recursion. The first step is the get pacmans options in the first for loop. Then for each option keep asking minimax function what the next moves value is until it gets to a recusive state. Then return that value all the was back up tracking max/min until you get the initial pacmans options.
 
+Q3.1
+The reason the values are the same is because it has the same exact logic. The only difference is that with alpha-beta you are skipping the exploration of certain areas when its no necessary. 
+
+Q3.2
+In case of a tie our algorithm keeps the first one explored and throws away the new one of the same value. 
+
