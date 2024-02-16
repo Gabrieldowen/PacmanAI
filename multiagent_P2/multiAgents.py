@@ -245,12 +245,12 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         reward = -1_000_000
-
+        depth = self.depth
         for action in gameState.getLegalActions(0):
 
 
             # if pacman makes the first move what is the reward from the rest of the moves
-            newReward = self.minimaxFunc(gameState.generateSuccessor(self.index, action), self.depth, self.index + 1, -1_000_000, 1_000_000)
+            newReward = self.getValue(gameState.generateSuccessor(self.index, action), self.depth, self.index+1, -1_000_000, 1_000_000)
 
             # track the best reward and move
             if newReward > reward:
@@ -265,7 +265,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         # makes sure index cycles
         index = index % gameState.getNumAgents()
 
-        # if tree is in terminal state
+       # if tree is in terminal state
         if gameState.isWin() or gameState.isLose() or depth == 0:
 
             return self.evaluationFunction(gameState)
@@ -286,10 +286,11 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 newValue = self.minimaxFunc(gameState.generateSuccessor(index, move), depth, index+1, Alpha, Beta)
                 bestValue = max(bestValue, newValue)
                 
-                if bestValue > Beta:
+                Alpha = max(Alpha, bestValue)
+
+                if Beta <= Alpha:
                     return bestValue
 
-                Alpha = max(Alpha, bestValue)
             return bestValue
 
 
@@ -303,12 +304,64 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 newValue = self.minimaxFunc(gameState.generateSuccessor(index, move), depth, index+1, Alpha, Beta)
                 bestValue = min(bestValue, newValue)
 
-                if bestValue < Alpha:
-                    return bestValue
                 Beta = min(Beta, bestValue)
+                if Beta <= Alpha:
+                    return bestValue
+                
 
             return bestValue
 
+    def getValue(self, gameState, depth, index, Alpha, Beta):
+        # makes sure index cycles
+        index = index % gameState.getNumAgents()
+
+        # go to next depth after the last agent goes
+        if index+1 == gameState.getNumAgents():
+            depth -= 1
+
+        # if tree is in terminal state
+        if gameState.isWin() or gameState.isLose() or depth == 0:
+
+            return self.evaluationFunction(gameState)
+
+        if index == 0:
+            return self.maxAgent(gameState, depth, index, Alpha, Beta)
+
+        else:
+            return self.minAgent(gameState, depth, index, Alpha, Beta)
+     
+    def minAgent(self, gameState, depth,index, Alpha, Beta):
+        # make no choice extremely expensive
+        bestValue = 1_000_000
+        for move in gameState.getLegalActions(index):
+
+             # get next state. If its terminal it returns here
+             newValue = self.getValue(gameState.generateSuccessor(index, move), depth, index+1, Alpha, Beta)
+             bestValue = min(bestValue, newValue)
+
+             if bestValue <= Alpha:
+                 return bestValue
+             Beta = min(Beta, bestValue)
+
+        return bestValue
+
+    def maxAgent(self, gameState, depth,index, Alpha, Beta):
+      # make no choice extrememly expenseive            
+        bestValue = -1_000_000
+
+        # go through each legal move
+        for move in gameState.getLegalActions(index):
+
+            # get next state. If its terminal it returns here
+            newValue = self.getValue(gameState.generateSuccessor(index, move), depth, index+1, Alpha, Beta)
+            bestValue = max(bestValue, newValue)
+
+            if bestValue >= Beta:
+                return bestValue
+
+            Alpha = max(Alpha, bestValue)
+        return bestValue
+         
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
       Your expectimax agent (question 4)
