@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -88,7 +88,7 @@ class ReflexAgent(Agent):
 
         # gets closest food
         if len(foodDistances) != 0:
-            minFood = min(foodDistances)[0]        
+            minFood = min(foodDistances)[0]
 
         # gets distances to ghosts
         for ghost in newGhostStates:
@@ -109,7 +109,7 @@ class ReflexAgent(Agent):
 
         # punish bad decisions
         if newPos in dangerousSpots:
-            penalty += 30 
+            penalty += 30
         if action == 'Stop':
             penalty += 10
 
@@ -179,6 +179,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         reward = -1_000_000
 
+        # this for loop it outside to track the moves associated with the values
         for action in gameState.getLegalActions(0):
 
 
@@ -191,6 +192,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 reward = newReward
                 bestAction = action
 
+
         return bestAction
 
     def minimaxFunc(self, gameState, depth, index):
@@ -202,14 +204,14 @@ class MinimaxAgent(MultiAgentSearchAgent):
         if gameState.isWin() or gameState.isLose() or depth == 0:
 
             return self.evaluationFunction(gameState)
-            
+
         # go to next depth after the last agent goes
         if index+1 == gameState.getNumAgents():
             depth -= 1
 
         # maximizing player
         if index == 0:
-            # make no choice extrememly expenseive            
+            # make no choice extrememly expenseive
             bestValue = -1_000_000
 
             # go through each legal move
@@ -218,7 +220,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 # get next state. If its terminal it returns here
                 newValue = self.minimaxFunc(gameState.generateSuccessor(index, move), depth, index+1)
                 bestValue = max(bestValue, newValue)
-                
+
             return bestValue
 
 
@@ -244,53 +246,57 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         """
         Returns the minimax action using self.depth and self.evaluationFunction
         """
-        reward = -1_000_000
+        reward = Alpha = -1_000_000
+        Beta = 1_000_000
 
-        for action in gameState.getLegalActions(0):
+        # if pacman makes the first move what is the reward from the rest of the moves
+        value, action = self.minimaxFuncAB(gameState, self.depth, self.index, Alpha, Beta)
 
+        return action
 
-            # if pacman makes the first move what is the reward from the rest of the moves
-            newReward = self.minimaxFunc(gameState.generateSuccessor(self.index, action), self.depth, self.index + 1, -1_000_000, 1_000_000)
+    def minimaxFuncAB(self, gameState, depth, index, Alpha,Beta):
 
-            # track the best reward and move
-            if newReward > reward:
-                # print(f"{action}: {newReward}")
-                reward = newReward
-                bestAction = action
-
-        return bestAction
-
-    def minimaxFunc(self, gameState, depth, index, Alpha,Beta):
-
-        # makes sure index cycles
-        index = index % gameState.getNumAgents()
+        # cycles agents and updates depth
+        if index >= gameState.getNumAgents():
+            depth -= 1
+            index = 0
 
         # if tree is in terminal state
         if gameState.isWin() or gameState.isLose() or depth == 0:
+            newValue = self.evaluationFunction(gameState)
 
-            return self.evaluationFunction(gameState)
-            
-        # go to next depth after the last agent goes
-        if index+1 == gameState.getNumAgents():
-            depth -= 1
+            # print(f"a{index}) alpha: {Alpha}, Beta: {Beta}, newValue: {newValue}")
+            return newValue, None
+
+
 
         # maximizing player
         if index == 0:
-            # make no choice extrememly expenseive            
+            # make no choice extrememly expenseive
             bestValue = -1_000_000
+            bestMove = ''
 
             # go through each legal move
             for move in gameState.getLegalActions(index):
 
                 # get next state. If its terminal it returns here
-                newValue = self.minimaxFunc(gameState.generateSuccessor(index, move), depth, index+1, Alpha, Beta)
-                bestValue = max(bestValue, newValue)
+                newValue, _ = self.minimaxFuncAB(gameState.generateSuccessor(index, move), depth, index+1, Alpha, Beta)
+
+                # update the value and the best move for pacman
+                if newValue > bestValue:
+                    bestValue = newValue
+                    bestMove = move
                 
+                # if true prune
                 if bestValue > Beta:
-                    return bestValue
+
+                    # print(f"a{index}) alpha: {Alpha}, Beta: {Beta}, val: {bestValue} move: {move}")
+                    return bestValue, bestMove
 
                 Alpha = max(Alpha, bestValue)
-            return bestValue
+
+            # print(f"a{index}) alpha: {Alpha}, Beta: {Beta}, val: {bestValue} move: {move}")
+            return bestValue, bestMove
 
 
         # minimizing player
@@ -300,14 +306,19 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             for move in gameState.getLegalActions(index):
 
                 # get next state. If its terminal it returns here
-                newValue = self.minimaxFunc(gameState.generateSuccessor(index, move), depth, index+1, Alpha, Beta)
+                newValue, _ = self.minimaxFuncAB(gameState.generateSuccessor(index, move), depth, index+1, Alpha, Beta)
                 bestValue = min(bestValue, newValue)
-
+                
+                # if true prune
                 if bestValue < Alpha:
-                    return bestValue
+                    # print(f"a{index}) alpha: {Alpha}, Beta: {Beta}, val: {bestValue}")
+                    return bestValue, None
+
                 Beta = min(Beta, bestValue)
 
-            return bestValue
+            # print(f"a{index}) alpha: {Alpha}, Beta: {Beta}, val: {bestValue}")
+            return bestValue, None
+
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
