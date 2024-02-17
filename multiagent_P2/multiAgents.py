@@ -333,7 +333,51 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        # Track the maximum utility for pacman agent
+        maxUtil = -1_000_000
+
+        for action in gameState.getLegalActions(0):
+            # Get the utility of the current action
+            currUtil = self.getValue(gameState.generateSuccessor(self.index, action), self.depth, self.index + 1)
+
+            # Update the maximum utility, and track its associated action
+            if currUtil > maxUtil:
+                maxUtil = currUtil
+                bestAction = action
+
+        return bestAction
+
+    # Return a value in the expectimax tree
+    def getValue(self, gameState: GameState, depth, index):
+        # Allow index to wrap around (index in (Z/indexZ))
+        index = index % gameState.getNumAgents()
+
+        # Get value at terminal state
+        if gameState.isWin() or gameState.isLose() or depth == 0:
+            return self.evaluationFunction(gameState)
+
+        # Go to the next depth once all agents at the current depth have gone
+        if index + 1 == gameState.getNumAgents():
+            depth -= 1
+
+        # Pacman agent
+        if index == 0:
+            value = -1_000_000
+            # Loop through all legal actions for the Pacman agent
+            for action in gameState.getLegalActions(index):
+                # Find the max value between the current value and the value of the successor state
+                value = max(value, self.getValue(gameState.generateSuccessor(index, action), depth, index+1))
+            return value
+        # Ghost agent
+        else:
+            value = 0
+            # Loop though all legal actions for the current ghost agent
+            for action in gameState.getLegalActions(index):
+                # Probability for a ghost choosing one of its legal moves is equally random
+                prob = 1.0 / len(gameState.getLegalActions(index))
+                value += prob * self.getValue(gameState.generateSuccessor(index, action), depth, index+1)
+            return value
 
 def betterEvaluationFunction(currentGameState: GameState):
     """
