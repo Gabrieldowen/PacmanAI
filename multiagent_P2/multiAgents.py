@@ -387,7 +387,31 @@ def betterEvaluationFunction(currentGameState: GameState):
     DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    # The positions of all food pellets
+    foodList = currentGameState.getFood().asList()
+    # Exit if there is no food left
+    if len(foodList) == 0:
+        return 0
+
+    # The position of pacman
+    pacmanPos = currentGameState.getPacmanPosition()
+    # The positions of all ghosts
+    ghosts = currentGameState.getGhostPositions()
+    # The positions of all power pellets
+    capsules = currentGameState.getCapsules()
+
+    # Get the distance to the closest food pellet
+    minFoodDist = min([manhattanDistance(pacmanPos, food) for food in foodList])
+    # Get the distance to the closest ghost
+    minGhostDist = min([manhattanDistance(pacmanPos, ghost) for ghost in ghosts])
+
+    # Get the closest power pellet
+    minCapsuleDist = 0
+    if len(capsules) > 0:
+        minCapsuleDist = min([manhattanDistance(pacmanPos, cap) for cap in capsules])
+
+    return 300*currentGameState.getScore() + 10/(minFoodDist + minGhostDist) - minCapsuleDist - len(foodList)
 
 # Abbreviation
 better = betterEvaluationFunction
