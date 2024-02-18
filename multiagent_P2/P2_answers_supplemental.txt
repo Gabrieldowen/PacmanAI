@@ -1,18 +1,38 @@
-Gabriel owen && Samuel Bonsteel
+Gabriel Owen && Samuel Bonsteel
 
 Q1.1:
 
-Before the agent was just based on where it currently was. Now It takes into consideration where the ghosts are and where they could move next as well as the power food. It also goes towards the nearest food. 
+Before the agent was just based on where it currently was. Now It takes into consideration where the ghosts 
+are and where they could move next as well as the power food. It also goes towards the nearest food. 
 
 Q1.2:
-the value function is 10/foodDistance + ghostDistance/10 - penalty. This way closer foods bring higher rewards and closer ghosts bring less reward. Then subtracting a penalty for remaining still and being near ghosts
+the value function is 10/foodDistance + ghostDistance/10 - penalty. This way closer foods bring higher rewards 
+and closer ghosts bring less reward. Then subtracting a penalty for remaining still and being near ghosts
 
 Q2.1
-the algorithm uses a lot of recursion. The first step is the get pacmans options in the first for loop. Then for each option keep asking minimax function what the next moves value is until it gets to a recusive state. Then return that value all the was back up tracking max/min until you get the initial pacmans options.
+the algorithm uses a lot of recursion. The first step is the get pacmans options in the first for loop. 
+Then for each option keep asking minimax function what the next moves value is until it gets to a recusive state. 
+Then return that value all the was back up tracking max/min until you get the initial pacmans options.
 
 Q3.1
-The reason the values are the same is because it has the same exact logic. The only difference is that with alpha-beta you are skipping the exploration of certain areas when its no necessary. 
+The reason the values are the same is because it has the same exact logic. The only difference is that with 
+alpha-beta you are skipping the exploration of certain areas when its no necessary. 
 
 Q3.2
 In case of a tie our algorithm keeps the first one explored and throws away the new one of the same value. 
 
+Q4.1
+The algorithm is very similar to the minimax algorithm. The main difference is that the ghost agent is no 
+longer a minimizing agent and is now random. The ghost will choose between its available actions at random 
+with an equal probability. Pacman still behaves the same as a maximizing agent.
+
+Q5.1
+This better evaluation function evaluates as 
+`SCORE + 10/(distance_to_nearest_food + distance_to_nearest_ghost) - distance_to_nearest_capsule`. 
+This means that the evaluation is maximized by keeping the game score high, staying near capsules, 
+going for the nearest food pellet, and staying near the closest ghost. This evaluation function is 
+better than the previous one because the previous evaluation function would incentivize Pacman avoiding 
+the ghosts which would cause him to sometimes run away from food pellets and sit in a corner and not leave. 
+The better evaluation function incentivizes pacman to stay near ghosts so he won't get stuck in a corner. 
+It also incentivizes Pacman to stay near capsule, so Pacman can easily use the capsule to save himself from 
+ghosts. The previous evaluation function doesn't consider the capsules.
