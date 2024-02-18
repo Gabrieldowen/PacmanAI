@@ -384,15 +384,25 @@ def betterEvaluationFunction(currentGameState: GameState):
     Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
     evaluation function (question 5).
 
-    DESCRIPTION: <write something here so we know what you did>
+    DESCRIPTION: We find the closest food pellet, ghost, and capsule to Pacman.
+    The final evaluation is dependent on the in-game score, the distance to the closest
+    capsule (power pellet), and the closest food pellet while staying near a ghost.
+    The `10/(minFoodDist + minGhostDist) ensures that the evaluation is increased by being closer to 
+    the nearest food pellet while keeping Pacman from running too far away from the ghost to get safe (As
+    minGhostDist increases, the evaluation decreases).
+    With the previous evaluation function, Pacman would often sit in a corner in order to avoid ghosts,
+    but making a higher score dependent on staying near a ghost helps prevent this behavior.
+    Reducing the evaluation by the distance to the closest capsule incentivize Pacman to stay near capsules.
+    The evaluation is also weighted by the overall score of the game in order for pacman to aim for 
+    a higher score.
     """
     "*** YOUR CODE HERE ***"
 
     # The positions of all food pellets
     foodList = currentGameState.getFood().asList()
-    # Exit if there is no food left
+    # Finish if there are no food pellets left
     if len(foodList) == 0:
-        return 0
+        return 1_000_000    # Make sure Pacman gets the last pellet
 
     # The position of pacman
     pacmanPos = currentGameState.getPacmanPosition()
@@ -408,10 +418,11 @@ def betterEvaluationFunction(currentGameState: GameState):
 
     # Get the closest power pellet
     minCapsuleDist = 0
+    # Only find capsule distance if there are capsules left
     if len(capsules) > 0:
         minCapsuleDist = min([manhattanDistance(pacmanPos, cap) for cap in capsules])
 
-    return 300*currentGameState.getScore() + 10/(minFoodDist + minGhostDist) - minCapsuleDist - len(foodList)
+    return currentGameState.getScore() + 10/(minFoodDist + minGhostDist) - minCapsuleDist
 
 # Abbreviation
 better = betterEvaluationFunction
