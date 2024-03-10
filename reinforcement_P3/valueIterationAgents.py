@@ -62,6 +62,17 @@ class ValueIterationAgent(ValueEstimationAgent):
     def runValueIteration(self):
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
+        for i in range(self.iterations):
+            states = self.mdp.getStates()
+            counter = util.Counter()
+            for state in states:
+                max_val = -1_000_000
+                for action in self.mdp.getPossibleActions(state):
+                    q_value = self.computeQValueFromValues(state, action)
+                    if q_value > max_val:
+                        max_val = q_value
+                    counter[state] = max_val
+        self.values = counter
 
 
     def getValue(self, state):
@@ -77,7 +88,14 @@ class ValueIterationAgent(ValueEstimationAgent):
           value function stored in self.values.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        q_value = 0
+        transition_states = self.mdp.getTransitionStatesAndProbs(state, action)
+
+        for next_state, prob in transition_states:
+            reward = self.mdp.getReward(state, action, next_state)
+            q_value += prob * (reward + self.discount * self.values[next_state])
+
+        return q_value
 
     def computeActionFromValues(self, state):
         """
@@ -89,7 +107,27 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        possible_actions = self.mdp.getPossibleActions(state)
+        
+        max_reward = (-1_000_000, 'None')
+        
+        for action in possible_actions:
+
+            # get the next possible states
+            future = self.mdp.getTransitionStatesAndProbs(state, action)
+            reward = 0
+
+            for transition in future:
+                nextState, prob = transition
+                reward += prob * (self.mdp.getReward(state, action, nextState) + self.discount * self.getValue(nextState))
+
+            print(f"reward: {reward}, action: {action}")
+
+            if reward > max_reward[0]:
+                max_reward = (reward, action)
+
+        print(f"\nmax_reward: {max_reward}\n")
+        return max_reward[1]
 
     def getPolicy(self, state):
         return self.computeActionFromValues(state)
