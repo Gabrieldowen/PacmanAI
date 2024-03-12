@@ -7,8 +7,13 @@
 Answer the supplemental questions here! Make sure you follow the format if it is asked
 Q1#######################
 QS1.1: 
+The first thing done is to get the possible action from the given state. then for each of those actions use getTransitionStatesAndProbs 
+to get all the possibilities for states from that action  with their probabilities. Then calculate the reward according to that and change
+maxReward if it is greater. Then return the max action.
 
 QS1.2:
+This one is very similar to the previous question. We start by getting the transition states and probabilities since we are given the action. Then for each 
+possibilities we add it to the qValue times their probabilities.
 
 Q3#######################
 
