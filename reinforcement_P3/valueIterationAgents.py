@@ -72,7 +72,8 @@ class ValueIterationAgent(ValueEstimationAgent):
                     if q_value > max_val:
                         max_val = q_value
                     counter[state] = max_val
-        self.values = counter
+
+            self.values = counter
 
 
     def getValue(self, state):
@@ -121,12 +122,9 @@ class ValueIterationAgent(ValueEstimationAgent):
                 nextState, prob = transition
                 reward += prob * (self.mdp.getReward(state, action, nextState) + self.discount * self.getValue(nextState))
 
-            print(f"reward: {reward}, action: {action}")
-
             if reward > max_reward[0]:
                 max_reward = (reward, action)
 
-        print(f"\nmax_reward: {max_reward}\n")
         return max_reward[1]
 
     def getPolicy(self, state):
