@@ -22,7 +22,12 @@ Q5#######################
 
 QS5.1:
 
+First we find the legal actions for the current state. Then choose a action using
+epsilon greedy. This results in either a random move or the max action based of q value
+
 QS5.2 [optional]:
+
+
 
 Q6#######################
 QS6.1:
@@ -31,6 +36,8 @@ QS6.2 [optional]:
 
 Q7#######################
 QS7.1
+
+'NOT POSSIBLE'
 
 
 
