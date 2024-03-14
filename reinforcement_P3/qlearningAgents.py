@@ -53,7 +53,9 @@ class QLearningAgent(ReinforcementAgent):
           or the Q node value otherwise
         """
         "*** YOUR CODE HERE ***"
-        # Return Q value for current state and action
+        # Return Q value for current state and action.
+        # util.Counter initializes elements to 0, so don't need to worry about
+        # first visit.
         return self.qValues[(state, action)]
 
     def computeValueFromQValues(self, state):
