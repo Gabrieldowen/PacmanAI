@@ -81,9 +81,8 @@ continually follow the same path because it doesn't take random actions and won'
 beyond the highest Q.
 
 QS6.2 [optional]:
-https://drive.google.com/file/d/15ybtUeSxzaaJUe1IpryxMHJSe6nN_qcc/view?usp=sharing
-(Sometimes there's an error when using the link, but I found refreshing a few times tends to
-fix this)
+https://drive.google.com/file/d/1P9UU6jwMOuIe7aegiWuHjC3o_mBEeCeu/view?usp=sharing
+(Might have to download video)
 
 Q7#######################
 QS7.1:
