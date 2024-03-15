@@ -16,28 +16,83 @@ This one is very similar to the previous question. We start by getting the trans
 possibilities we add it to the qValue times their probabilities.
 
 Q3#######################
+QS3.1:
+a) Having a low discount (0.1) incentivizes a closer exit because the reward of the further
+one will be smaller. The negative reward also incentivizes going to the closer exit in order
+to not lose more utility. No noise makes the agent not at risk of falling off the cliff
+because their actions will be deterministic.
 
-QS3.1: 
+b) The low discount still incentivizes going to the closer exit like in (a). Using 0.1 noise
+causes uncertainty in the transitions, so going on the path closer to the cliff is too risky.
+No reward ensures that the shortest path isn't taken.
+
+c) By using a low discount, we the further exit reward is higher by the time the agent gets
+there than when using a low discount. No noise is used to ensure that actions are
+deterministic and there won't be any risk of falling off the cliff. Using a negative
+living reward would cause the closer exit to be more likely to be taken to reduce loss of
+reward, so we don't use a negative living reward. Using a positive living reward would
+incentivize the agent to never exit, so we don't use positive reward. Therefore, we use
+a living reward of zero.
+
+d) Like in (c), we use a higher discount to not disincentivize going to the further exit.
+We use a higher noise (0.5) to make it very risky to take the cliff path on a long path
+to the further exit. We use a zero living reward like in (c) for the same reasons.
+
+e) We use a discount of 1 so that there is no reduced reward over time, making exiting less
+urgent. We use no noise in order to ensure that the agent will never fall off the cliff. We
+use a living reward of 1 to incentivize the agent to never exit and stay in the grid because
+it will continue to accrue reward.
+
 Q5#######################
-
 QS5.1:
-
-First we find the legal actions for the current state. Then choose a action using
-epsilon greedy. This results in either a random move or the max action based of q value
+First, we use a counter data structure from the util class to hold the updates to the Q
+values (and this is indexed by (state, action)). The Q values are updated in the 'update'
+function by using the formula 'Q(s,a) = (1 - alpha) * Q(s,a) + alpha * sample' where
+'sample = reward + discount * maxQ'. This maxQ is obtained by the function
+'computeValueFromQValues' with the next state (passed to update as argument). This function
+works over all legal actions for the given state, and if there are no legal actions it
+returns 0. Otherwise, it evaluates a for loop to find the max Q stored in the counter
+data structure. Next, the 'computeActionFromQValues' function loops over the counter
+(using the satte and action as indices) to find the max Q value like with computing values,
+but it returns the corresponding action for that Q value. The 'getAction' function has an
+'epsilon' chance of taking a random legal action and a (1 - 'epsilon') chance to take the
+best action (from 'computeActionFromQValues'). (We implemented epsilon greedy for Q6 at
+the same time as working on Q5)
 
 QS5.2 [optional]:
-
-
+Filename: 'q5-bonus.png'
+For no noise, the ending return was 0.5314410000000002, and the average return was
+0.5326219800000002. For noise = 0.2, the ending return was 0.47829690000000014, and the
+average return was 0.5338029600000003. The ending returns differed by about 0.05, but the
+average returns were very similar. This could be because, even though there is noise
+for the second run, there is already randomness from the epsilon greedy aspect of taking
+an action. So, there is randomness either way.
 
 Q6#######################
 QS6.1:
-QS6.2 [optional]:
+Yes this is expected behavior. When epsilon is low here, the agent will have less
+random actions and will choose an action based on Q values. At the beginning before many
+values have been updated, every state has Q values of 0. This is why the agent stays in place
+often (it doesn't have a best choice), and it rarely moves around. These movements early on
+are determined by the random choice, but epsilon is small so this happens rarely. No noise
+also makes the agent explore less in the early stages because there is no chance of an action
+(staying still) going wrong. Once some values have been updated, however, the agent will
+continually follow the same path because it doesn't take random actions and won't explore
+beyond the highest Q.
 
+QS6.2 [optional]:
+https://drive.google.com/file/d/15ybtUeSxzaaJUe1IpryxMHJSe6nN_qcc/view?usp=sharing
+(Sometimes there's an error when using the link, but I found refreshing a few times tends to
+fix this)
 
 Q7#######################
-QS7.1
-
-'NOT POSSIBLE'
+QS7.1:
+This is not possible. When the randomness is too low, the agent finds the exit reward immediately
+to its west, and it will continue to just follow this policy to this reward over and over. If the
+randomness is just high enough to explore past that immediate reward, it has a very high chance of
+going into the exit state with the large negative reward (the fire spaces). Also, just by the nature
+of having high randomness, it is near impossible to get a 99% success rate when the agent is acting
+even somewhat randomly because it will not likely go to the same space repeatedly off of randomness.
 
 
 
