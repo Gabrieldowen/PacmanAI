@@ -62,18 +62,22 @@ class ValueIterationAgent(ValueEstimationAgent):
     def runValueIteration(self):
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
-        for i in range(self.iterations):
-            states = self.mdp.getStates()
-            counter = util.Counter()
-            for state in states:
-                max_val = -1_000_000
-                for action in self.mdp.getPossibleActions(state):
-                    q_value = self.computeQValueFromValues(state, action)
-                    if q_value > max_val:
-                        max_val = q_value
-                    counter[state] = max_val
+        # for each iteration
+        for _ in range(self.iterations):
 
-            self.values = counter
+            # get all the states
+            states = self.mdp.getStates()
+            tempValues = util.Counter()
+
+            # for each state get its max Q value and save to counter
+            for s in states:
+                maxVal = -1_000_000
+                for a in self.mdp.getPossibleActions(s):
+                    qValue = self.computeQValueFromValues(s, a)
+                    maxVal = max(maxVal, qValue)
+                    tempValues[s] = maxVal
+
+            self.values = tempValues
 
 
     def getValue(self, state):
@@ -92,8 +96,13 @@ class ValueIterationAgent(ValueEstimationAgent):
         q_value = 0
         transition_states = self.mdp.getTransitionStatesAndProbs(state, action)
 
+        # get each possible state and its probability from the current state
         for next_state, prob in transition_states:
+
+            # get the reward for the transition
             reward = self.mdp.getReward(state, action, next_state)
+
+            # calculate the Q value
             q_value += prob * (reward + self.discount * self.values[next_state])
 
         return q_value
