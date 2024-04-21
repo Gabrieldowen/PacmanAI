@@ -347,26 +347,29 @@ class DiscreteDistribution(dict):
         # gets the sum  of all valu
         # es
         
-        print("COPY DIST")
+        # print("COPY DIST")
         dist = self.copy()
-        print(type(dist))
-        print(f"\n {dist} \n")
+        # print(type(dist))
+        # print(f"\n before: {dist} total {sum(item[1] for item in list(sorted(dist.items())))}\n")
         total = self.total()
+
         sortedItems = list(sorted(dist.items()))
 
 
-        # print(f"\n before normalization: {dist} \n")
+        # print(f"\ninside normalize  before normalization: {dist} total {dist.total()}")
 
         # if the sum is not 0, normalize the values
         if total != 0:
             for key, value in sortedItems:
                 dist[key] = dist[key] / self.total()
-            self.dist = dist
 
-        # print(f"\n after normalization: {dist} \n")
+            # print(f"\n inside normalize after normalization: {dist} total {dist.total()}")
 
-        self.dist = dist
-        print(f"\n {self.dist} \n")
+            return dist
+        
+        # print(f"\n TOTAL == 0 inside normalize after normalization: {dist} total {dist.total()}")
+        return dist
+        # print(f"\n after: {self.dist} total {sum(item[1] for item in list(sorted(dist.items())))}\n")
         "*** END YOUR CODE HERE ***"
 
     def sample(self):
@@ -606,6 +609,7 @@ class ExactInference(InferenceModule):
         """
         "*** YOUR CODE HERE ***"
 
+        """ FIRST ATTTEMPT LEAVING TO REVIEW LATER
         # list of all possible ghost pos including jail
         for pos in self.allPositions:
             # get the observation probability
@@ -622,11 +626,20 @@ class ExactInference(InferenceModule):
             # update the belief P(beleif | pos) * P(observation | pos) / P(observation)
             if total_probability != 0:
                 self.beliefs[pos] = (self.beliefs[pos] * self.getObservationProb(observation, gameState.getPacmanPosition(), pos, self.getJailPosition()))/total_probability
-            
+        """
+        # NEW ATTEMPT
+        for pos in self.allPositions:
+            obsProb = self.getObservationProb(observation, gameState.getPacmanPosition(), pos, self.getJailPosition())
+            self.beliefs[pos] = self.beliefs[pos] * obsProb
+            pass
 
 
         "*** END YOUR CODE HERE ***"
-        self.beliefs.normalize()
+        # print(f"\n\nbefore normal {self.beliefs} total: {self.beliefs.total()}")
+        self.beliefs = self.beliefs.normalize()
+
+        # print(f"\nafter normal {self.beliefs} total: {self.beliefs.total()}")
+
     
     ########### ########### ###########
     ########### QUESTION 7  ###########
@@ -696,7 +709,7 @@ class ParticleFilter(InferenceModule):
         for p in self.legalPositions:
             self.beliefs[p] = 1.0
         self.beliefs.normalize()
-
+        
         """
         "*** END YOUR CODE HERE ***"
 
@@ -726,7 +739,7 @@ class ParticleFilter(InferenceModule):
         # normalize the distribution
         self.dist = self.dist.normalize()
 
-        print(self.dist)
+        print(f"{self.dist} {type(self.dist)} {self.dist.total()} {self.dist.copy()}")
 
         print("DONE WITH BELIEF DISTRIBUTION")
 

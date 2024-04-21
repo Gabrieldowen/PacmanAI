@@ -102,7 +102,14 @@ def joinFactors(factors: List[Factor]):
 
 
     "*** YOUR CODE HERE ***"
-    raiseNotDefined()
+    print("what factors we working in: ", factors)
+    newFactor = list(factors)[0]
+    for factor in list(factors):
+        print(f"factor: {factor}")
+
+
+    print(f"\n\nreturning new factor: {newFactor}\n\n")
+    return newFactor
     "*** END YOUR CODE HERE ***"
 
 ########### ########### ###########
