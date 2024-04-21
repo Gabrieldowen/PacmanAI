@@ -65,7 +65,7 @@ def constructBayesNet(gameState: hunters.GameState):
     # define the domain for each variable
     variableDomainsDict = {GHOST0: [], GHOST1: [], OBS0: [], OBS1: [], PAC: []}
 
-    print(f"\n\n {X_RANGE} {Y_RANGE} {MAX_NOISE} \n\n")
+    # print(f"\n\n {X_RANGE} {Y_RANGE} {MAX_NOISE} \n\n")
 
     # populate the domain for each variable
     for x in range(X_RANGE):
@@ -79,7 +79,7 @@ def constructBayesNet(gameState: hunters.GameState):
         for obs in range(X_RANGE + Y_RANGE + MAX_NOISE - 1):
             variableDomainsDict[var].append(obs)
 
-    print(f"\n\n\n pacman: {variableDomainsDict[OBS0]}\n\n\n")
+    # print(f"\n\n\n pacman: {variableDomainsDict[OBS0]}\n\n\n")
 
     "*** YOUR CODE HERE ***"
     "*** END YOUR CODE HERE ***"
@@ -343,7 +343,24 @@ class DiscreteDistribution(dict):
         {}
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+
+        # gets the sum  of all valu
+        # es
+        dist = self.copy()
+        self.total = self.total()
+        sortedItems = list(sorted(dist.items()))
+
+        # print(f"\n before normalization: {dist} \n")
+
+        # if the sum is not 0, normalize the values
+        if self.total != 0:
+            for key, value in sortedItems:
+                dist[key] = dist[key] / self.total
+            self.dist = dist
+
+        # print(f"\n after normalization: {dist} \n")
+
+        self.dist = dist
         "*** END YOUR CODE HERE ***"
 
     def sample(self):
@@ -368,7 +385,18 @@ class DiscreteDistribution(dict):
         0.0
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        dist = self.copy()
+        # print(dist)
+
+        # Extract options and weights
+        options = list(dist.keys())
+        weights = list(dist.values())
+
+        # Randomly choose a tuple based on the weights
+        chosen_tuple = random.choices(options, weights=weights, k=1)[0]
+
+        # print(f"{chosen_tuple}", end='')
+        return chosen_tuple
         "*** END YOUR CODE HERE ***"
 
 
@@ -443,7 +471,22 @@ class InferenceModule:
         Return the probability P(noisyDistance | pacmanPosition, ghostPosition).
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        trueDistance = manhattanDistance(pacmanPosition, ghostPosition)
+        # print(f"\n\n pacmanPosition {pacmanPosition} ghostPosition {ghostPosition} trueDistance {trueDistance} noisyDistance: {noisyDistance} \n\n")
+        # print(f"\n\n ghostPosition {ghostPosition} jailPosition {jailPosition} noisyDistance: {noisyDistance}\n\n")
+       
+        if noisyDistance == None and ghostPosition == jailPosition:
+            observation = 1
+        elif noisyDistance == None and ghostPosition != jailPosition:
+            observation = 0
+        elif noisyDistance != None and ghostPosition == jailPosition:
+            observation = 0
+        else:
+            observation = busters.getObservationProbability(noisyDistance, trueDistance)
+
+
+        return observation
+
         "*** END YOUR CODE HERE ***"
 
     def setGhostPosition(self, gameState, ghostPosition, index):
