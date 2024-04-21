@@ -613,6 +613,8 @@ class ExactInference(InferenceModule):
 
             # TODO (all lines below) how do we update the belief given the probability it happens... Bayes theorum?
             # i think we want P(beleif | observation) = P(observation | beleif) * P(beleif) / P(observation)
+            # beleif = P(ghost | pos)
+            gameState.getObservationProb(observation, gameState.getPacmanPosition(), pos, self.getJailPosition())
 
             # get the total probability 
             total_probability = sum(self.beliefs[position] * self.getObservationProb(observation, gameState.getPacmanPosition(), position, self.getJailPosition()) for position in self.beliefs)
