@@ -347,15 +347,16 @@ class DiscreteDistribution(dict):
         # gets the sum  of all valu
         # es
         dist = self.copy()
-        self.total = self.total()
+        total = self.total()
         sortedItems = list(sorted(dist.items()))
+
 
         # print(f"\n before normalization: {dist} \n")
 
         # if the sum is not 0, normalize the values
-        if self.total != 0:
+        if total != 0:
             for key, value in sortedItems:
-                dist[key] = dist[key] / self.total
+                dist[key] = dist[key] / total
             self.dist = dist
 
         # print(f"\n after normalization: {dist} \n")
@@ -599,7 +600,24 @@ class ExactInference(InferenceModule):
         position is known.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+
+        # list of all possible ghost pos including jail
+        for pos in self.allPositions:
+            # get the observation probability
+            # def getObservationProb(self, noisyDistance: int, pacmanPosition: Tuple, ghostPosition: Tuple, jailPosition: Tuple):
+
+            # TODO (all lines below) how do we update the belief given the probability it happens... Bayes theorum?
+            # i think we want P(beleif | observation) = P(observation | beleif) * P(beleif) / P(observation)
+
+            # get the total probability 
+            total_probability = sum(self.beliefs[position] * self.getObservationProb(observation, gameState.getPacmanPosition(), position, self.getJailPosition()) for position in self.beliefs)
+
+            # update the belief P(beleif | pos) * P(observation | pos) / P(observation)
+            if total_probability != 0:
+                self.beliefs[pos] = (self.beliefs[pos] * self.getObservationProb(observation, gameState.getPacmanPosition(), pos, self.getJailPosition()))/total_probability
+            
+
+
         "*** END YOUR CODE HERE ***"
         self.beliefs.normalize()
     
