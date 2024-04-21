@@ -346,7 +346,11 @@ class DiscreteDistribution(dict):
 
         # gets the sum  of all valu
         # es
+        
+        print("COPY DIST")
         dist = self.copy()
+        print(type(dist))
+        print(f"\n {dist} \n")
         total = self.total()
         sortedItems = list(sorted(dist.items()))
 
@@ -356,12 +360,13 @@ class DiscreteDistribution(dict):
         # if the sum is not 0, normalize the values
         if total != 0:
             for key, value in sortedItems:
-                dist[key] = dist[key] / total
+                dist[key] = dist[key] / self.total()
             self.dist = dist
 
         # print(f"\n after normalization: {dist} \n")
 
         self.dist = dist
+        print(f"\n {self.dist} \n")
         "*** END YOUR CODE HERE ***"
 
     def sample(self):
@@ -666,8 +671,31 @@ class ParticleFilter(InferenceModule):
         self.particles for the list of particles.
         """
         self.particles = []
-        "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+
+        particlesPerPosition =  self.numParticles // len(self.legalPositions) 
+        remainder = self.numParticles % len(self.legalPositions) 
+
+        print(f"\n stepSize: {particlesPerPosition} remainder: {remainder} {len(self.legalPositions)}, {self.numParticles}\n")
+
+
+        # Distribute particles evenly among positions
+        for pos in self.legalPositions:
+            self.particles.extend([pos] * particlesPerPosition)
+
+        # Distribute remaining particles evenly among positions
+        for i in range(remainder):
+            self.particles.append(self.legalPositions[i])
+
+
+        """
+        This is one of the other methods from above
+
+        self.beliefs = DiscreteDistribution()
+        for p in self.legalPositions:
+            self.beliefs[p] = 1.0
+        self.beliefs.normalize()
+
+        """
         "*** END YOUR CODE HERE ***"
 
     def getBeliefDistribution(self):
@@ -679,7 +707,27 @@ class ParticleFilter(InferenceModule):
         This function should return a normalized distribution.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+
+        # raiseNotDefined()
+        # make the class
+        self.dist = DiscreteDistribution()
+
+        # count the number of particles at each position and add to the distribution
+        for p in self.particles:
+            if p in self.dist:
+                self.dist[p] += 1
+            else:
+                self.dist[p] = 1
+
+        print(type(self.dist))
+        
+        # normalize the distribution
+        self.dist = self.dist.normalize()
+
+        print(self.dist)
+
+        print("DONE WITH BELIEF DISTRIBUTION")
+
         "*** END YOUR CODE HERE ***"
     
     ########### ########### ###########
