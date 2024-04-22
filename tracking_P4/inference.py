@@ -627,25 +627,11 @@ class ExactInference(InferenceModule):
             if total_probability != 0:
                 self.beliefs[pos] = (self.beliefs[pos] * self.getObservationProb(observation, gameState.getPacmanPosition(), pos, self.getJailPosition()))/total_probability
         """
-        # NEW ATTEMPT "P(popositions | observation) = P(position) * P(observation | position) / P(observation)"
-        
+        # NEW ATTEMPT
         for pos in self.allPositions:
-            # this is for sure P(noisyDistance| pacmanPosition,ghostPosition) or P(observation | PacmanPOS, GhostPOS, JailPOS)
             obsProb = self.getObservationProb(observation, gameState.getPacmanPosition(), pos, self.getJailPosition())
-            if observation != 0 and observation != None:
-                # "P(ghostResides | observation, PacmanPOS, jailPOS) = P(ghostResides)                                   * P(observation | ghostResides)   / P(observation)"
-                self.beliefs[pos]                                    = (((gameState.getNumAgents() -1)/len(self.allPositions)) * obsProb)                         / observation
+            self.beliefs[pos] = self.beliefs[pos] * obsProb
             pass
-
-            # update = 0
-            # # Get Pacman's position
-            # pacman_position = gameState.getPacmanPosition()
-            # # Get the jail position
-            # jail_position = self.getJailPosition()
-            # for ghostPOS in self.allPositions:
-            #     obsProb = self.getObservationProb(observation, pacman_position, ghostPOS, jail_position)
-            #     update += obsProb * self.beliefs[ghostPOS]
-            # self.beliefs[pos] = update
 
 
         "*** END YOUR CODE HERE ***"
