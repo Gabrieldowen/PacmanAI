@@ -584,7 +584,7 @@ class ExactInference(InferenceModule):
         # B(x_t | e_1:t) \prop B(x_t | e_1:t-1)*P(e_t|x_t)
         # x = ghost pos
         # e = pacman sensor observation
-        
+
         pacmanPos = gameState.getPacmanPosition()
         jailPos = self.getJailPosition()
         # Create new distribution to store the updated beliefs
@@ -613,6 +613,8 @@ class ExactInference(InferenceModule):
         "*** YOUR CODE HERE ***"
         # Equation
         # B'(X_t+1) = \sum P(X_t+1 | x_t)B(x_t))
+        # B = beliefs
+        # P = probibilty at new position (in newPosDist)
 
         # Create new distribution to store beliefs
         newBeliefs = DiscreteDistribution()
@@ -654,13 +656,11 @@ class ParticleFilter(InferenceModule):
         distributed across positions in order to ensure a uniform prior. Use
         self.particles for the list of particles.
         """
-        self.particles = [pos for i in range(self.numParticles) for pos in self.legalPositions]
+        "*** YOUR CODE HERE ***"
 
-        """
+        self.particles = []
         particlesPerPosition =  self.numParticles // len(self.legalPositions)
         remainder = self.numParticles % len(self.legalPositions) 
-
-        print(f"\n stepSize: {particlesPerPosition} remainder: {remainder} {len(self.legalPositions)}, {self.numParticles}\n")
 
         # Distribute particles evenly among positions
         for pos in self.legalPositions:
@@ -669,16 +669,6 @@ class ParticleFilter(InferenceModule):
         # Distribute remaining particles evenly among positions
         for i in range(remainder):
             self.particles.append(self.legalPositions[i])
-        """    
-        """
-        This is one of the other methods from above
-
-        self.beliefs = DiscreteDistribution()
-        for p in self.legalPositions:
-            self.beliefs[p] = 1.0
-        self.beliefs.normalize()
-        
-        """
         "*** END YOUR CODE HERE ***"
 
     def getBeliefDistribution(self):
@@ -693,21 +683,18 @@ class ParticleFilter(InferenceModule):
 
         # raiseNotDefined()
         # make the class
-        self.dist = DiscreteDistribution()
+        dist = DiscreteDistribution()
 
         # count the number of particles at each position and add to the distribution
         for p in self.particles:
-            if p in self.dist:
-                self.dist[p] += 1
+            if p in dist:
+                dist[p] += 1
             else:
-                self.dist[p] = 1
-
-        print(type(self.dist))
+                dist[p] = 1
         
         # normalize the distribution
-        self.dist = self.dist.normalize()
-
-        print(f"{self.dist} {type(self.dist)} {self.dist.total()} {self.dist.copy()}")
+        dist.normalize()
+        return dist
 
         print("DONE WITH BELIEF DISTRIBUTION")
 
