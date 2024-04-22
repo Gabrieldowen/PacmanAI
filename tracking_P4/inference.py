@@ -343,34 +343,14 @@ class DiscreteDistribution(dict):
         {}
         """
         "*** YOUR CODE HERE ***"
-
-        # gets the sum  of all valu
-        # es
-        
-        # print("COPY DIST")
-        dist = self.copy()
-        # print(type(dist))
-        # print(f"\n before: {dist} total {sum(item[1] for item in list(sorted(dist.items())))}\n")
+        # Get the total of all values
         total = self.total()
-
-        sortedItems = list(sorted(dist.items()))
-
-
-        # print(f"\ninside normalize  before normalization: {dist} total {dist.total()}")
-
-        # if the sum is not 0, normalize the values
-        if total != 0:
-            for key, value in sortedItems:
-                dist[key] = dist[key] / self.total()
-
-            # print(f"\n inside normalize after normalization: {dist} total {dist.total()}")
-
-            return dist
-        
-        # print(f"\n TOTAL == 0 inside normalize after normalization: {dist} total {dist.total()}")
-        return dist
-        # print(f"\n after: {self.dist} total {sum(item[1] for item in list(sorted(dist.items())))}\n")
-        "*** END YOUR CODE HERE ***"
+        # If the total value is 0, do nothing
+        if total == 0:
+            return
+        # Normalize the distribution by dividing each item in the dist by total
+        for (key,value) in self.items():
+            self[key] /= total # self[key] updates current distribution
 
     def sample(self):
         """
@@ -395,7 +375,6 @@ class DiscreteDistribution(dict):
         """
         "*** YOUR CODE HERE ***"
         dist = self.copy()
-        # print(dist)
 
         # Extract options and weights
         options = list(dist.keys())
@@ -404,9 +383,7 @@ class DiscreteDistribution(dict):
         # Randomly choose a tuple based on the weights
         chosen_tuple = random.choices(options, weights=weights, k=1)[0]
 
-        # print(f"{chosen_tuple}", end='')
         return chosen_tuple
-        "*** END YOUR CODE HERE ***"
 
 
 class InferenceModule:
@@ -481,8 +458,6 @@ class InferenceModule:
         """
         "*** YOUR CODE HERE ***"
         trueDistance = manhattanDistance(pacmanPosition, ghostPosition)
-        # print(f"\n\n pacmanPosition {pacmanPosition} ghostPosition {ghostPosition} trueDistance {trueDistance} noisyDistance: {noisyDistance} \n\n")
-        # print(f"\n\n ghostPosition {ghostPosition} jailPosition {jailPosition} noisyDistance: {noisyDistance}\n\n")
        
         if noisyDistance == None and ghostPosition == jailPosition:
             observation = 1
@@ -495,8 +470,6 @@ class InferenceModule:
 
 
         return observation
-
-        "*** END YOUR CODE HERE ***"
 
     def setGhostPosition(self, gameState, ghostPosition, index):
         """
@@ -607,39 +580,22 @@ class ExactInference(InferenceModule):
         current position. However, this is not a problem, as Pacman's current
         position is known.
         """
-        "*** YOUR CODE HERE ***"
+        # Equation
+        # B(x_t | e_1:t) \prop B(x_t | e_1:t-1)*P(e_t|x_t)
+        # x = ghost pos
+        # e = pacman sensor observation
 
-        """ FIRST ATTTEMPT LEAVING TO REVIEW LATER
-        # list of all possible ghost pos including jail
-        for pos in self.allPositions:
-            # get the observation probability
-            # def getObservationProb(self, noisyDistance: int, pacmanPosition: Tuple, ghostPosition: Tuple, jailPosition: Tuple):
+        pacmanPos = gameState.getPacmanPosition()
+        jailPos = self.getJailPosition()
+        # Create new distribution to store the updated beliefs
+        newBeliefs = DiscreteDistribution()
+        # Loop through possible ghost positions
+        for ghostPos in self.allPositions:
+            newBeliefs[ghostPos] = self.beliefs[ghostPos] * self.getObservationProb(observation, pacmanPos, ghostPos, jailPos)
 
-            # TODO (all lines below) how do we update the belief given the probability it happens... Bayes theorum?
-            # i think we want P(beleif | observation) = P(observation | beleif) * P(beleif) / P(observation)
-            # beleif = P(ghost | pos)
-            gameState.getObservationProb(observation, gameState.getPacmanPosition(), pos, self.getJailPosition())
-
-            # get the total probability 
-            total_probability = sum(self.beliefs[position] * self.getObservationProb(observation, gameState.getPacmanPosition(), position, self.getJailPosition()) for position in self.beliefs)
-
-            # update the belief P(beleif | pos) * P(observation | pos) / P(observation)
-            if total_probability != 0:
-                self.beliefs[pos] = (self.beliefs[pos] * self.getObservationProb(observation, gameState.getPacmanPosition(), pos, self.getJailPosition()))/total_probability
-        """
-        # NEW ATTEMPT
-        for pos in self.allPositions:
-            obsProb = self.getObservationProb(observation, gameState.getPacmanPosition(), pos, self.getJailPosition())
-            self.beliefs[pos] = self.beliefs[pos] * obsProb
-            pass
-
-
-        "*** END YOUR CODE HERE ***"
-        # print(f"\n\nbefore normal {self.beliefs} total: {self.beliefs.total()}")
-        self.beliefs = self.beliefs.normalize()
-
-        # print(f"\nafter normal {self.beliefs} total: {self.beliefs.total()}")
-
+        # Set class beliefs to the updated beliefs
+        self.beliefs = newBeliefs
+        self.beliefs.normalize()
     
     ########### ########### ###########
     ########### QUESTION 7  ###########
@@ -655,7 +611,22 @@ class ExactInference(InferenceModule):
         current position is known.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        # Equation
+        # B'(X_t+1) = \sum P(X_t+1 | x_t)B(x_t))
+        # B = beliefs
+        # P = probibilty at new position (in newPosDist)
+
+        # Create new distribution to store beliefs
+        newBeliefs = DiscreteDistribution()
+        # Loop through possible ghost positions
+        for oldPos in self.allPositions:
+            # Get the distribution for the new positions
+            newPosDist = self.getPositionDistribution(gameState, oldPos)
+            # Loop through distribution for new positions
+            for (newPos, p) in newPosDist.items():
+                newBeliefs[newPos] += p * self.beliefs[oldPos]
+        # Set class beliefs to updated bliefs
+        self.beliefs = newBeliefs
         "*** END YOUR CODE HERE ***"
 
     def getBeliefDistribution(self):
@@ -685,13 +656,11 @@ class ParticleFilter(InferenceModule):
         distributed across positions in order to ensure a uniform prior. Use
         self.particles for the list of particles.
         """
+        "*** YOUR CODE HERE ***"
+
         self.particles = []
-
-        particlesPerPosition =  self.numParticles // len(self.legalPositions) 
+        particlesPerPosition =  self.numParticles // len(self.legalPositions)
         remainder = self.numParticles % len(self.legalPositions) 
-
-        print(f"\n stepSize: {particlesPerPosition} remainder: {remainder} {len(self.legalPositions)}, {self.numParticles}\n")
-
 
         # Distribute particles evenly among positions
         for pos in self.legalPositions:
@@ -700,17 +669,6 @@ class ParticleFilter(InferenceModule):
         # Distribute remaining particles evenly among positions
         for i in range(remainder):
             self.particles.append(self.legalPositions[i])
-
-
-        """
-        This is one of the other methods from above
-
-        self.beliefs = DiscreteDistribution()
-        for p in self.legalPositions:
-            self.beliefs[p] = 1.0
-        self.beliefs.normalize()
-        
-        """
         "*** END YOUR CODE HERE ***"
 
     def getBeliefDistribution(self):
@@ -722,26 +680,19 @@ class ParticleFilter(InferenceModule):
         This function should return a normalized distribution.
         """
         "*** YOUR CODE HERE ***"
-
-        # raiseNotDefined()
         # make the class
-        self.dist = DiscreteDistribution()
+        dist = DiscreteDistribution()
 
         # count the number of particles at each position and add to the distribution
         for p in self.particles:
-            if p in self.dist:
-                self.dist[p] += 1
+            if p in dist:
+                dist[p] += 1
             else:
-                self.dist[p] = 1
-
-        print(type(self.dist))
+                dist[p] = 1
         
         # normalize the distribution
-        self.dist = self.dist.normalize()
-
-        print(f"{self.dist} {type(self.dist)} {self.dist.total()} {self.dist.copy()}")
-
-        print("DONE WITH BELIEF DISTRIBUTION")
+        dist.normalize()
+        return dist
 
         "*** END YOUR CODE HERE ***"
     
@@ -762,7 +713,32 @@ class ParticleFilter(InferenceModule):
         the DiscreteDistribution may be useful.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        # List of probabilities of observations
+        pacmanPos = gameState.getPacmanPosition()
+        jailPos = self.getJailPosition()
+        # Store the new belief
+        newBelief = DiscreteDistribution()
+        # Get the old belief
+        oldBelief = self.getBeliefDistribution()
+        # Calc weights at all positions
+        for ghostPos in self.allPositions:
+            # Calc wiehgt
+            weight = self.getObservationProb(observation, pacmanPos, ghostPos, jailPos)
+            # Calc new belief
+            newBelief[ghostPos] = weight * oldBelief[ghostPos]
+
+        # Reinitialize if weights are all 0
+        if newBelief.total() == 0:
+            self.initializeUniformly(gameState)
+        else:
+            # Renormalize
+            newBelief.normalize()
+            # Resample over renormalized distribution
+            for idx in range(len(self.particles)):
+                self.particles[idx] = newBelief.sample()
+        
+        # Loop through the noisy distance to each living ghost
+        
         "*** END YOUR CODE HERE ***"
     
     ########### ########### ###########
