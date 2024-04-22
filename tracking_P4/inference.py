@@ -680,8 +680,6 @@ class ParticleFilter(InferenceModule):
         This function should return a normalized distribution.
         """
         "*** YOUR CODE HERE ***"
-
-        # raiseNotDefined()
         # make the class
         dist = DiscreteDistribution()
 
@@ -695,8 +693,6 @@ class ParticleFilter(InferenceModule):
         # normalize the distribution
         dist.normalize()
         return dist
-
-        print("DONE WITH BELIEF DISTRIBUTION")
 
         "*** END YOUR CODE HERE ***"
     
@@ -717,8 +713,29 @@ class ParticleFilter(InferenceModule):
         the DiscreteDistribution may be useful.
         """
         "*** YOUR CODE HERE ***"
-        # raiseNotDefined()
         # List of probabilities of observations
+        pacmanPos = gameState.getPacmanPosition()
+        jailPos = self.getJailPosition()
+        # Store the new belief
+        newBelief = DiscreteDistribution()
+        # Get the old belief
+        oldBelief = self.getBeliefDistribution()
+        # Calc weights at all positions
+        for ghostPos in self.allPositions:
+            # Calc wiehgt
+            weight = self.getObservationProb(observation, pacmanPos, ghostPos, jailPos)
+            # Calc new belief
+            newBelief[ghostPos] = weight * oldBelief[ghostPos]
+
+        # Reinitialize if weights are all 0
+        if newBelief.total() == 0:
+            self.initializeUniformly(gameState)
+        else:
+            # Renormalize
+            newBelief.normalize()
+            # Resample over renormalized distribution
+            for i in range(self.numParticles):
+                self.particles[i] = newBelief.sample()
         
         # Loop through the noisy distance to each living ghost
         
