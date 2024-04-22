@@ -734,8 +734,8 @@ class ParticleFilter(InferenceModule):
             # Renormalize
             newBelief.normalize()
             # Resample over renormalized distribution
-            for i in range(self.numParticles):
-                self.particles[i] = newBelief.sample()
+            for idx in range(len(self.particles)):
+                self.particles[idx] = newBelief.sample()
         
         # Loop through the noisy distance to each living ghost
         
