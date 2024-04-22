@@ -5,4 +5,6 @@ QS3.1 [option]:
 
 
 
-QS7.1: 
+QS7.1: Test 2 and 3 are where the differences in shading appear. This is because the agents in 1 and 4 are random agents,
+so they are equally likely to be anywhere in the grid. The agents in 2 and 3 move south, so the belief is higher that the ghost
+will be in the south. So, on 2 and 3, since the ghost is believed to more likely be in the south, the squares in the south are darker.
